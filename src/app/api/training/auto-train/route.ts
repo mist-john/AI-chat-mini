@@ -4,7 +4,7 @@ import XPost from '@/models/XPost';
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if this is an authorized request (you can add authentication here)
+    //------ Check if this is an authorized request (you can add authentication here)------//
     const authHeader = request.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.AUTO_TRAIN_SECRET}`) {
       return NextResponse.json(
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
 
-    // Sample X posts data for daily training
+    // -----------------------------Sample X posts data for daily training-----------------------------//
     const sampleXPosts = [
       {
         postId: `daily_${Date.now()}_1`,
@@ -61,11 +61,11 @@ export async function POST(request: NextRequest) {
       }
     ];
 
-    // Clear old daily posts and insert new ones
+    // -----------------------------Clear old daily posts and insert new ones-----------------------------//
     await XPost.deleteMany({ postId: { $regex: /^daily_/ } });
     const insertedPosts = await XPost.insertMany(sampleXPosts);
 
-    // Log training completion
+    // -----------------------------Log training completion-----------------------------//
     console.log(`[${new Date().toISOString()}] Automatic daily training completed with ${insertedPosts.length} new posts`);
 
     return NextResponse.json({
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET endpoint to check training status
+// -----------------------------GET endpoint to check training status-----------------------------//
 export async function GET() {
   try {
     await connectToDatabase();

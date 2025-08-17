@@ -49,40 +49,40 @@ const ClientSchema = new mongoose.Schema<IClient, IClientModel>(
   }
 );
 
-// Index for efficient queries
+// -----------------------------Index for efficient queries-----------------------------//
 ClientSchema.index({ lastReset: 1 });
 
-// Instance method to check if client can send messages
+// -----------------------------Instance method to check if client can send messages-----------------------------//
 ClientSchema.methods.canSendMessage = function(): boolean {
   const now = new Date();
   const oneDay = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
   
-  // Check if it's been more than 24 hours since last reset
+  // -----------------------------Check if it's been more than 24 hours since last reset-----------------------------//
   if (now.getTime() - this.lastReset.getTime() > oneDay) {
     return true; // Can send message, will reset
   }
   
-  // Check if message limit is reached
+  // -----------------------------Check if message limit is reached-----------------------------//
   return this.messageCount < 100;
 };
 
-// Instance method to increment message count
+// -----------------------------Instance method to increment message count-----------------------------//
 ClientSchema.methods.incrementMessageCount = function(): void {
   const now = new Date();
   const oneDay = 24 * 60 * 60 * 1000;
   
-  // Check if it's been more than 24 hours since last reset
+  // -----------------------------Check if it's been more than 24 hours since last reset-----------------------------//
   if (now.getTime() - this.lastReset.getTime() > oneDay) {
-    // Reset message count and update lastReset
+    // -----------------------------Reset message count and update lastReset-----------------------------//
     this.messageCount = 1;
     this.lastReset = now;
   } else {
-    // Increment message count
+    // -----------------------------Increment message count-----------------------------//
     this.messageCount += 1;
   }
 };
 
-// Static method to find or create client
+// -----------------------------Static method to find or create client-----------------------------//     
 ClientSchema.statics.findOrCreateClient = async function(
   clientId: string,
   ipAddress?: string,

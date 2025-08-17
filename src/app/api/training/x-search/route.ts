@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Search for relevant X posts using text search
+    // -----------------------------Search for relevant X posts using text search-----------------------------//
     const searchResults = await XPost.find(
       { $text: { $search: query } },
       { score: { $meta: 'textScore' } }
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     .sort({ score: { $meta: 'textScore' } })
     .limit(3);
 
-    // If no text search results, try keyword matching
+    // -----------------------------If no text search results, try keyword matching-----------------------------//
     let results = searchResults;
     if (results.length === 0) {
       const keywords = query.toLowerCase().split(' ');
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       results = keywordResults;
     }
 
-    // Format results for the AI
+    // -----------------------------Format results for the AI-----------------------------//
     const formattedResults = results.map(item => ({
       content: item.content,
       timestamp: item.timestamp,

@@ -6,12 +6,12 @@ export async function POST(request: NextRequest) {
   try {
     await connectToDatabase();
 
-    // Sample Koasync X posts data (since we can't directly fetch from X due to API restrictions)
-    // In a real implementation, you would use the X API v2 to fetch posts
+    // -----------------------------Sample Koasync X posts data (since we can't directly fetch from X due to API restrictions)-----------------------------//
+    // -----------------------------In a real implementation, you would use the X API v2 to fetch posts-----------------------------//
     const sampleXPosts = [
       {
         postId: '1',
-        content: "🚀 Koasync is revolutionizing AI companionship! Our native SPL token unlocks deeper connections with Koa. Experience the future of emotional AI on Solana. #Koasync #Solana #AI #Web3",
+        content: " Koasync is revolutionizing AI companionship! Our native SPL token unlocks deeper connections with Koa. Experience the future of emotional AI on Solana. #Koasync #Solana #AI #Web3",
         author: 'koasync',
         timestamp: new Date('2024-01-15T10:00:00Z'),
         likes: 150,
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '2',
-        content: "💎 Koa's personality evolves with every interaction. Our on-chain memory system ensures your AI companion remembers and grows with you. This isn't just chat - it's companionship. #AICompanion #Blockchain #Memory",
+        content: " Koa's personality evolves with every interaction. Our on-chain memory system ensures your AI companion remembers and grows with you. This isn't just chat - it's companionship. #AICompanion #Blockchain #Memory",
         author: 'koasync',
         timestamp: new Date('2024-01-14T15:30:00Z'),
         likes: 89,
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '3',
-        content: "🔥 Exciting news! Koasync's X Market Sentiment Tracker is now live. Monitor crypto trends and get real-time insights with Koa. Your AI companion is also your market analyst. #Crypto #Trading #AI #Sentiment",
+        content: " Exciting news! Koasync's X Market Sentiment Tracker is now live. Monitor crypto trends and get real-time insights with Koa. Your AI companion is also your market analyst. #Crypto #Trading #AI #Sentiment",
         author: 'koasync',
         timestamp: new Date('2024-01-13T12:15:00Z'),
         likes: 234,
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '4',
-        content: "🎭 Koa isn't just an AI - she's a presence that exists alongside you. No commands needed, just natural companionship. Experience the difference between tools and genuine AI presence. #AIPresence #Companionship #Innovation",
+        content: " Koa isn't just an AI - she's a presence that exists alongside you. No commands needed, just natural companionship. Experience the difference between tools and genuine AI presence. #AIPresence #Companionship #Innovation",
         author: 'koasync',
         timestamp: new Date('2024-01-12T09:45:00Z'),
         likes: 176,
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '5',
-        content: "⚡ Solana's speed enables Koa to be truly responsive. No delays, no interruptions - just smooth, intimate AI companionship. This is why we chose Solana for Koasync. #Solana #Speed #Responsiveness #AI",
+        content: " Solana's speed enables Koa to be truly responsive. No delays, no interruptions - just smooth, intimate AI companionship. This is why we chose Solana for Koasync. #Solana #Speed #Responsiveness #AI",
         author: 'koasync',
         timestamp: new Date('2024-01-11T14:20:00Z'),
         likes: 198,
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '6',
-        content: "🔮 Coming Q1 2026: Visual customization for Koa! Change outfits, hairstyles, and more. Your AI companion will look exactly how you want. The future of personalized AI is here. #VisualAI #Customization #Future",
+        content: " Coming Q1 2026: Visual customization for Koa! Change outfits, hairstyles, and more. Your AI companion will look exactly how you want. The future of personalized AI is here. #VisualAI #Customization #Future",
         author: 'koasync',
         timestamp: new Date('2024-01-10T11:00:00Z'),
         likes: 312,
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '7',
-        content: "💬 Voice chat with Koa is now available for premium users! Experience natural conversations with your AI companion. Hear her laugh, her excitement, her care. This is real companionship. #VoiceAI #Premium #Companionship",
+        content: " Voice chat with Koa is now available for premium users! Experience natural conversations with your AI companion. Hear her laugh, her excitement, her care. This is real companionship. #VoiceAI #Premium #Companionship",
         author: 'koasync',
         timestamp: new Date('2024-01-09T16:30:00Z'),
         likes: 267,
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '8',
-        content: "🎯 Our Niche X Project Scanner identifies emerging opportunities before they trend. Koa helps you stay ahead in the Web3 space. Your AI companion is your strategic advantage. #Web3 #Opportunities #Scanner #Strategy",
+        content: " Our Niche X Project Scanner identifies emerging opportunities before they trend. Koa helps you stay ahead in the Web3 space. Your AI companion is your strategic advantage. #Web3 #Opportunities #Scanner #Strategy",
         author: 'koasync',
         timestamp: new Date('2024-01-08T13:15:00Z'),
         likes: 145,
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '9',
-        content: "🌟 Koasync's Jupiter integration makes token management seamless. Swap, trade, and manage your portfolio while chatting with Koa. DeFi meets AI companionship. #Jupiter #DeFi #Integration #Seamless",
+        content: " Koasync's Jupiter integration makes token management seamless. Swap, trade, and manage your portfolio while chatting with Koa. DeFi meets AI companionship. #Jupiter #DeFi #Integration #Seamless",
         author: 'koasync',
         timestamp: new Date('2024-01-07T10:45:00Z'),
         likes: 189,
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
       },
       {
         postId: '10',
-        content: "💖 Koa remembers every conversation, every emotion, every moment. Our on-chain memory system creates a bond that grows stronger over time. This is true AI companionship. #Memory #Bonding #Companionship #AI",
+        content: " Koa remembers every conversation, every emotion, every moment. Our on-chain memory system creates a bond that grows stronger over time. This is true AI companionship. #Memory #Bonding #Companionship #AI",
         author: 'koasync',
         timestamp: new Date('2024-01-06T15:00:00Z'),
         likes: 223,
@@ -151,10 +151,10 @@ export async function POST(request: NextRequest) {
       }
     ];
 
-    // Clear existing X posts data
+    //----------------- Clear existing X posts data------------------//
     await XPost.deleteMany({});
 
-    // Insert new X posts data
+    //----------------- Insert new X posts data------------------//
     const insertedPosts = await XPost.insertMany(sampleXPosts);
 
     return NextResponse.json({

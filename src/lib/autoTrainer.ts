@@ -16,15 +16,15 @@ class AutoTrainer {
   }
 
   private async initializeTraining() {
-    // Check if we need to train on startup
+    // -----------------------------Check if we need to train on startup-----------------------------//
     await this.checkAndTrainIfNeeded();
     
-    // Set up daily training interval (every 24 hours)
+    // -----------------------------Set up daily training interval (every 24 hours)-----------------------------//
     this.trainingInterval = setInterval(async () => {
       await this.performDailyTraining();
     }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
 
-    // Also check every hour to ensure we don't miss training
+    // -----------------------------Also check every hour to ensure we don't miss training-----------------------------//
     setInterval(async () => {
       await this.checkAndTrainIfNeeded();
     }, 60 * 60 * 1000); // 1 hour in milliseconds
@@ -32,7 +32,7 @@ class AutoTrainer {
 
   private async checkAndTrainIfNeeded(): Promise<void> {
     try {
-      // Only run in browser environment
+      // -----------------------------Only run in browser environment-----------------------------//
       if (typeof window === 'undefined') return;
       
       const response = await fetch('/api/training/auto-train', {
@@ -60,7 +60,7 @@ class AutoTrainer {
       return;
     }
 
-    // Only run in browser environment
+    // -----------------------------Only run in browser environment-----------------------------//
     if (typeof window === 'undefined') return;
 
     this.isRunning = true;
@@ -80,7 +80,7 @@ class AutoTrainer {
         this.lastTrainingTime = Date.now();
         console.log('Automatic daily training completed successfully:', data.message);
         
-        // Store training completion in localStorage for UI feedback
+        // -----------------------------Store training completion in localStorage for UI feedback-----------------------------//
         if (typeof window !== 'undefined') {
           localStorage.setItem('lastAutoTraining', new Date().toISOString());
           localStorage.setItem('autoTrainingStatus', 'success');
@@ -120,16 +120,16 @@ class AutoTrainer {
   }
 }
 
-// Export singleton instance
+// -----------------------------Export singleton instance-----------------------------//
 export const autoTrainer = AutoTrainer.getInstance();
 
-// Function to start auto-training (call this in your app)
+// -----------------------------Function to start auto-training (call this in your app)-----------------------------//
 export function startAutoTraining() {
   console.log('Auto-training system started');
   return autoTrainer;
 }
 
-// Function to check training status
+// -----------------------------Function to check training status-----------------------------//
 export async function checkTrainingStatus() {
   try {
     const response = await fetch('/api/training/auto-train');

@@ -74,7 +74,7 @@ const XPostSchema = new Schema<IXPost>({
   timestamps: true
 });
 
-// Create text index for semantic search
+// -----------------------------Create text index for semantic search-----------------------------//
 XPostSchema.index({ content: 'text', hashtags: 'text' });
 
 export default mongoose.models.XPost || mongoose.model<IXPost>('XPost', XPostSchema);

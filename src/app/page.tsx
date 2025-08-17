@@ -13,7 +13,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen relative overflow-hidden">
-      {/* Background Gradient */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div
           className="w-full h-full"
@@ -22,8 +21,6 @@ export default function Home() {
               "radial-gradient(circle at center, #000000 0%, #000000 70%, #f35d38 100%)",
           }}
         >
-          {/* Center Video - fixed size, always same */}
-         {/* Center Video - fixed size, always same, rounded 50% */}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
           <video
             className="shadow-2xl"
@@ -41,7 +38,6 @@ export default function Home() {
             />
           </video>
 
-          {/* Overlay text */}
           <div className="absolute inset-0 flex items-center  top-1/2 justify-start">
             <h1 className="text-white text-[50px] font-bold text-bottom">
               YOUR ASYNC
@@ -53,7 +49,6 @@ export default function Home() {
         
 
   
-          {/* First PNG - left */}
           <div className="absolute top-[20%] bottom-[40%] left-0 right-[85%]">
             <Image
             src="https://static.wixstatic.com/media/b05468_574332580d1d4c53898357fd07614cc4~mv2.png/v1/fill/w_244,h_401,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/u2926181799_httpss_mj_runf0v3QQmizkw_anime_girl_with_twin_tai_382abecb-8976-4856-a227-1a83.png"              alt="Anime girl left"
@@ -63,7 +58,6 @@ export default function Home() {
             />
           </div>
   
-          {/* Second PNG - right */}
           <div className="absolute top-0 bottom-[40%] left-[70%] right-0">
             <Image
               src="https://static.wixstatic.com/media/b05468_b789c69a875b482faad0c103cee1d215~mv2.png/v1/fill/w_460,h_493,al_c,lg_1,q_85,enc_avif,quality_auto/u2926181799_httpss_mj_runf0v3QQmizkw_anime_girl_with_twin_tai_aab79948-d7ad-483b-b224-ab1f.png"
@@ -76,7 +70,6 @@ export default function Home() {
        
         </div>
   
-        {/* White Lines */}
         <div className="absolute top-0 bottom-0 left-[15%] w-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
         <div className="absolute top-0 bottom-0 left-[50%] w-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
         <div className="absolute top-0 bottom-0 left-[70%] w-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
@@ -84,9 +77,7 @@ export default function Home() {
         <div className="absolute left-0 right-0 top-[60%] h-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
       </div>
   
-      {/* Buttons */}
       <div className="absolute right-[10%] top-[65%] flex flex-col gap-4 z-30">
-  {/* CHAT WITH KOA - dark gradient */}
           <button
           onClick={() => setIsChatOpen(true)}
           className="
@@ -112,22 +103,11 @@ export default function Home() {
           READ GITBOOK
         </button>
 
-        {/* Auto-training status indicator */}
-        {/* <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-3 mt-4">
-          <div className="flex items-center justify-center gap-2 text-green-300 text-sm">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span>🤖 AI Auto-training Active - Updates Daily</span>
-          </div>
-        </div> */}
-
-
-
-
 
 </div>
 
   
-      {/* Chat Modal */}
+      Chat Modal
       <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
       
 

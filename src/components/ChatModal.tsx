@@ -48,21 +48,21 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Get API key from environment variable
+  // -----------------------------Get API key from environment variable-----------------------------//
   const API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
-  // Initialize or get client data from MongoDB
+  // -----------------------------Initialize or get client data from MongoDB-----------------------------//
   useEffect(() => {
     const initializeClient = async () => {
       try {
-        // Generate or get existing client ID
+        // -----------------------------Generate or get existing client ID-----------------------------//
         let clientId = localStorage.getItem('koaClientId');
         if (!clientId) {
           clientId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           localStorage.setItem('koaClientId', clientId);
         }
 
-        // Get client status from MongoDB
+        // -----------------------------Get client status from MongoDB-----------------------------//
         const response = await fetch('/api/client/status', {
           method: 'POST',
           headers: {
@@ -106,7 +106,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     }
   }, [isOpen]);
 
-  // Initialize first session and load from localStorage
+  // -----------------------------Initialize first session and load from localStorage-----------------------------//
   useEffect(() => {
     const savedSessions = localStorage.getItem('koaChatSessions');
     if (savedSessions) {
@@ -134,21 +134,21 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     }
   }, []);
 
-  // Update current session when messages change
+  // -----------------------------Update current session when messages change-----------------------------//
   useEffect(() => {
     if (messages.length > 0 && currentSessionId) {
       updateCurrentSession();
     }
   }, [messages, currentSessionId]);
 
-  // Save sessions to localStorage whenever they change
+  // -----------------------------Save sessions to localStorage whenever they change-----------------------------//
   useEffect(() => {
     if (chatSessions.length > 0) {
       localStorage.setItem('koaChatSessions', JSON.stringify(chatSessions));
     }
   }, [chatSessions]);
 
-  // Chat session management functions
+  // -----------------------------Chat session management functions-----------------------------//
   const createNewSession = () => {
     const newSession: ChatSession = {
       id: `session_${Date.now()}`,
@@ -212,7 +212,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const updateMessageCount = async () => {
     if (clientData) {
       try {
-        // Increment message count in MongoDB
+        // -----------------------------Increment message count in MongoDB-----------------------------//
         const response = await fetch('/api/client/increment', {
           method: 'POST',
           headers: {
@@ -242,7 +242,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     e.preventDefault();
     if (!inputValue.trim() || isLoading || messageLimitReached) return;
 
-    // Check if API key is available
+    // -----------------------------Check if API key is available-----------------------------//
     if (!API_KEY) {
       const errorMessage: Message = {
         id: Date.now().toString(),
@@ -254,7 +254,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       return;
     }
 
-    // Check message limit before proceeding
+    // -----------------------------Check message limit before proceeding-----------------------------//
     if (clientData && clientData.messageCount >= 100) {
       setMessageLimitReached(true);
       return;
@@ -271,11 +271,11 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     setInputValue('');
     setIsLoading(true);
 
-    // Increment message count for user message
+    // -----------------------------Increment message count for user message-----------------------------//
     await updateMessageCount();
 
     try {
-      // Search for relevant Koasync X posts data
+      // -----------------------------Search for relevant Koasync X posts data-----------------------------//       
       let xPostsContext = '';
       try {
         const searchResponse = await fetch('/api/training/x-search', {
@@ -359,10 +359,10 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
 
       const data = await response.json();
       
-      // Process AI response content to improve formatting
+      // -----------------------------Process AI response content to improve formatting-----------------------------//
       let processedContent = data.choices[0].message.content;
       
-      // Clean up excessive newlines and improve formatting
+      // -----------------------------Clean up excessive newlines and improve formatting-----------------------------//
       processedContent = processedContent
         .replace(/\n{3,}/g, '\n\n') // Replace 3+ newlines with 2
         .replace(/\n\s*\n/g, '\n\n') // Remove empty lines with spaces
@@ -377,7 +377,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
 
       setMessages(prev => [...prev, aiMessage]);
       
-      // Increment message count for AI response
+      // -----------------------------Increment message count for AI response-----------------------------//
       await updateMessageCount();
     } catch (error) {
       console.error('Error:', error);
@@ -389,7 +389,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
       };
       setMessages(prev => [...prev, errorMessage]);
       
-      // Increment message count for error response
+      // -----------------------------Increment message count for error response-----------------------------//
       await updateMessageCount();
     } finally {
       setIsLoading(false);
@@ -404,7 +404,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
           : 'opacity-0 pointer-events-none'
       }`}
     >
-      {/* Backdrop */}
+      {/* -----------------------------Backdrop-----------------------------*/}
       <div 
         className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-in-out ${
           isOpen ? 'opacity-100' : 'opacity-0'
@@ -412,7 +412,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
         onClick={onClose}
       />
       
-      {/* Modal Content */}
+      {/* -----------------------------Modal Content-----------------------------*/}
       <div 
         className={`bg-gray-900 rounded-2xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl border border-gray-700 transition-all duration-300 ease-in-out transform ${
           isOpen 
@@ -420,7 +420,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
             : 'opacity-0 scale-95 translate-y-4'
         }`}
       >
-        {/* Header */}
+        {/* -----------------------------Header-----------------------------*/}
         <div className="flex items-center justify-between p-6 border-b border-gray-700 animate-in slide-in-from-top-2 duration-300 ease-out">
           <div className="flex items-center gap-3">
             <button
@@ -467,7 +467,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
           </div>
         </div>
 
-        {/* Chat History Sidebar */}
+        {/* -----------------------------Chat History Sidebar-----------------------------*/}
         {isSidebarOpen && (
           <div className="absolute left-0 top-0 h-full w-80 bg-gray-800 border-r border-gray-700 z-10 animate-in slide-in-from-left-2 duration-300 ease-out">
             <div className="p-4 border-b border-gray-700">
@@ -530,7 +530,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
           </div>
         )}
 
-        {/* Message Limit Warning */}
+        {/* -----------------------------Message Limit Warning-----------------------------*/}
         {messageLimitReached && (
           <div className="bg-red-900/50 border border-red-700 mx-6 mt-4 p-4 rounded-lg animate-in slide-in-from-top-2 duration-300 ease-out">
             <div className="flex items-center gap-3">
@@ -545,7 +545,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
           </div>
         )}
 
-        {/* Messages */}
+              {/* -----------------------------Messages-----------------------------*/}
         <div className={`flex-1 overflow-y-auto p-6 space-y-4 ${isSidebarOpen ? 'ml-80' : ''}`}>
           {messages.map((message, index) => (
             <div
@@ -606,7 +606,7 @@ Important: Format your responses naturally with proper paragraph breaks. Use sin
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input - Completely disabled when limit reached */}
+            {/* -----------------------------Input - Completely disabled when limit reached-----------------------------*/}
         <form onSubmit={handleSubmit} className={`p-6 border-t border-gray-700 animate-in slide-in-from-bottom-2 duration-300 ease-out ${isSidebarOpen ? 'ml-80' : ''}`}>
           <div className="flex gap-3">
             <input
