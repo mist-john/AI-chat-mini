@@ -22,6 +22,7 @@ const ClientSchema = new mongoose.Schema<IClient, IClientModel>(
       type: String,
       required: true,
       unique: true,
+      index: true,
     },
     messageCount: {
       type: Number,
@@ -49,7 +50,6 @@ const ClientSchema = new mongoose.Schema<IClient, IClientModel>(
 );
 
 // Index for efficient queries
-ClientSchema.index({ clientId: 1 });
 ClientSchema.index({ lastReset: 1 });
 
 // Instance method to check if client can send messages

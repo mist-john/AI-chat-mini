@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 import Client, { IClientModel } from '@/models/Client';
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB();
+    await connectToDatabase();
     
     const { clientId } = await request.json();
     

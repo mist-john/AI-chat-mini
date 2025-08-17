@@ -4,8 +4,12 @@ import { useState } from 'react';
 import Image from 'next/image';
 import ChatModal from '../components/ChatModal';
 
+
+
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+
 
   return (
     <main className="min-h-screen relative overflow-hidden">
@@ -108,11 +112,26 @@ export default function Home() {
           READ GITBOOK
         </button>
 
+        {/* Auto-training status indicator */}
+        {/* <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-3 mt-4">
+          <div className="flex items-center justify-center gap-2 text-green-300 text-sm">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span>🤖 AI Auto-training Active - Updates Daily</span>
+          </div>
+        </div> */}
+
+
+
+
+
 </div>
 
   
       {/* Chat Modal */}
       <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      
+
+      
     </main>
   );
   

@@ -4,12 +4,13 @@ A beautiful AI chatbot application built with Next.js, featuring a Koa AI Agent-
 
 ## Features
 
-- 🎨 **Beautiful Design**: Inspired by Koa AI Agent with anime character illustrations
-- 🤖 **AI Chat**: Powered by OpenAI GPT-4o mini
-- 📱 **Responsive**: Works on desktop and mobile devices
-- 🔒 **Message Limits**: 100 messages per client per day
-- 💾 **Client Tracking**: Persistent client identification and usage tracking
-- 🎭 **Modern UI**: Smooth animations and gradient backgrounds
+-  **Beautiful Design**: Inspired by Koa AI Agent with anime character illustrations
+-  **AI Chat**: Powered by OpenAI GPT-4o mini with built-in Koasync knowledge
+- 🤖 **Automatic Training**: AI trains automatically every day with latest Koasync data
+-  **Responsive**: Works on desktop and mobile devices
+-  **Message Limits**: 100 messages per client per day
+-  **Client Tracking**: Persistent client identification and usage tracking
+-  **Modern UI**: Smooth animations and gradient backgrounds
 
 ## Setup
 
@@ -45,6 +46,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 |----------|-------------|----------|
 | `NEXT_PUBLIC_OPENAI_API_KEY` | Your OpenAI API key for GPT-4o mini | Yes |
 | `MONGODB_URI` | MongoDB connection string | Yes |
+| `AUTO_TRAIN_SECRET` | Secret key for automatic training API | Yes |
 
 ## How to Get an OpenAI API Key
 
@@ -73,6 +75,32 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 mongodb+srv://username:password@cluster.mongodb.net/koa-ai-chat?retryWrites=true&w=majority
 ```
 
+## Automatic Training Setup
+
+The AI chatbot automatically trains daily with the latest Koasync data. Here's how it works:
+
+### How Auto-Training Works
+1. **Background Process**: Starts automatically when the app loads
+2. **Daily Schedule**: Trains every 24 hours automatically
+3. **Smart Monitoring**: Checks hourly to ensure training is up-to-date
+4. **No User Action**: Completely hands-off operation
+
+### Production Deployment
+For production deployment, you can also set up a cron job to call the training API:
+
+```bash
+# Add to your crontab (runs daily at 2 AM)
+0 2 * * * curl -X POST https://your-domain.com/api/training/auto-train \
+  -H "Authorization: Bearer YOUR_AUTO_TRAIN_SECRET" \
+  -H "Content-Type: application/json"
+```
+
+### Training Data Sources
+- **Koasync X Posts**: Latest social media updates and announcements
+- **Community Insights**: Real-time feedback and trending topics
+- **Market Updates**: Latest developments and feature announcements
+- **Built-in Knowledge**: Comprehensive GitBook documentation
+
 ## Features Explained
 
 ### Message Limit System
@@ -93,10 +121,25 @@ mongodb+srv://username:password@cluster.mongodb.net/koa-ai-chat?retryWrites=true
 - Error handling and user feedback
 - Loading states and smooth animations
 
+### Automatic Training System
+- **Daily Auto-training**: AI trains automatically every 24 hours
+- **Background Process**: Runs silently without user intervention
+- **Real-time Updates**: Latest X posts and community insights
+- **Status Monitoring**: Visual indicator shows training is active
+- **Smart Scheduling**: Checks hourly and trains when needed
+
+### Koasync Knowledge
+- Built-in understanding of Koasync project philosophy and vision
+- Knowledge of Solana blockchain integration and Web3 concepts
+- Information about token utilities, trait unlocks, and monitoring systems
+- Understanding of AI companionship as presence rather than tool
+- Daily training with latest X posts and social media updates
+- Real-time community insights and trending topics
+
 ## Project Structure
 
 ```
-koa-ai-clone/
+koa_chat/
 ├── src/
 │   ├── app/
 │   │   ├── page.tsx          # Main landing page
@@ -105,14 +148,16 @@ koa-ai-clone/
 │   │           ├── status/   # Client status API
 │   │           └── increment/ # Message increment API
 │   ├── components/
-│   │   └── ChatModal.tsx     # AI chat interface
+│   │   └── ChatModal.tsx     # AI chat interface (with built-in Koasync knowledge)
 │   ├── lib/
-│   │   └── mongodb.ts        # MongoDB connection
+│   │   └── mongodb.ts        # MongoDB connection for client tracking
 │   └── models/
-│       └── Client.ts         # Client data model
+│       └── Client.ts         # Client data model for message limits
 ├── public/                    # Static assets
 ├── .env.local                 # Environment variables (create this)
-└── README.md                  # This file
+├── README.md                  # This file
+├── KOASYNC_KNOWLEDGE.md       # Documentation about built-in knowledge
+├── src/components/AutoTrainerProvider.tsx  # Automatic training provider
 ```
 
 ## Security Notes
