@@ -1,103 +1,121 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import ChatModal from '../components/ChatModal';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  return (
+    <main className="min-h-screen relative overflow-hidden">
+      {/* Background Gradient */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div
+          className="w-full h-full"
+          style={{
+            background:
+              "radial-gradient(circle at center, #000000 0%, #000000 70%, #f35d38 100%)",
+          }}
+        >
+          {/* Center Video - fixed size, always same */}
+         {/* Center Video - fixed size, always same, rounded 50% */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
+          <video
+            className="shadow-2xl"
+            width={600}   // fixed width
+            height={400}  // fixed height
+            style={{ minWidth: "600px", minHeight: "400px", borderRadius: "50%" }}
+            autoPlay
+            muted
+            loop
+            playsInline
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <source
+              src="https://video.wixstatic.com/video/b05468_a88514db02f54492983be2816df27b44/720p/mp4/file.mp4"
+              type="video/mp4"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </video>
+
+          {/* Overlay text */}
+          <div className="absolute inset-0 flex items-center  top-1/2 justify-start">
+            <h1 className="text-white text-[50px] font-bold text-bottom">
+              YOUR ASYNC
+              <br /> AI COMPANION
+            </h1>
+          </div>
+
+          </div>
+        
+
+  
+          {/* First PNG - left */}
+          <div className="absolute top-[20%] bottom-[40%] left-0 right-[85%]">
+            <Image
+            src="https://static.wixstatic.com/media/b05468_574332580d1d4c53898357fd07614cc4~mv2.png/v1/fill/w_244,h_401,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/u2926181799_httpss_mj_runf0v3QQmizkw_anime_girl_with_twin_tai_382abecb-8976-4856-a227-1a83.png"              alt="Anime girl left"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+  
+          {/* Second PNG - right */}
+          <div className="absolute top-0 bottom-[40%] left-[70%] right-0">
+            <Image
+              src="https://static.wixstatic.com/media/b05468_b789c69a875b482faad0c103cee1d215~mv2.png/v1/fill/w_460,h_493,al_c,lg_1,q_85,enc_avif,quality_auto/u2926181799_httpss_mj_runf0v3QQmizkw_anime_girl_with_twin_tai_aab79948-d7ad-483b-b224-ab1f.png"
+              alt="Anime girl right"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+       
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  
+        {/* White Lines */}
+        <div className="absolute top-0 bottom-0 left-[15%] w-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
+        <div className="absolute top-0 bottom-0 left-[50%] w-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
+        <div className="absolute top-0 bottom-0 left-[70%] w-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
+        <div className="absolute left-0 right-0 top-[20%] h-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
+        <div className="absolute left-0 right-0 top-[60%] h-[1px]" style={{ backgroundColor: "#ffffff" }}></div>
+      </div>
+  
+      {/* Buttons */}
+      <div className="absolute right-[10%] top-[65%] flex flex-col gap-4 z-30">
+  {/* CHAT WITH KOA - dark gradient */}
+          <button
+          onClick={() => setIsChatOpen(true)}
+          className="
+            text-white font-bold py-3 px-8 border border-white
+            bg-transparent
+            transition-colors duration-300
+            hover:bg-gradient-to-r from-red-500 to-orange-400
+            active:bg-red-600
+          "
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          CHAT WITH KOA
+        </button>
+
+        <button onClick={() => window.open('https://koasync.gitbook.io/koasync', '_blank')}
+          className="
+            text-white font-bold py-3 px-8 border border-white
+            bg-transparent
+            transition-colors duration-300
+            hover:bg-gradient-to-r from-red-500 to-orange-400
+            active:bg-red-600
+          "
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          READ GITBOOK
+        </button>
+
+</div>
+
+  
+      {/* Chat Modal */}
+      <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+    </main>
   );
+  
+
+  
 }
