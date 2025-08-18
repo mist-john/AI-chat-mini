@@ -453,8 +453,10 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       let gitbookContext = '';
       
       try {
-        // Search GitBook content for Koasync documentation
+        // Enhanced GitBook search for complex sentences
         const enhancedQuery = userMessage.content + ' Koasync GitBook documentation';
+        console.log('[Chat] Searching GitBook with query:', enhancedQuery);
+        
         const gitbookSearchResponse = await fetch('/api/training/gitbook-search', {
           method: 'POST',
           headers: {
@@ -466,13 +468,27 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         if (gitbookSearchResponse.ok) {
           const gitbookSearchData = await gitbookSearchResponse.json();
           if (gitbookSearchData.results && gitbookSearchData.results.length > 0) {
-            gitbookContext = '\n\n📚 Relevant Koasync GitBook Content:\n' + 
-              gitbookSearchData.results.map((item: any, index: number) => 
-                `${index + 1}. ${item.title} (${item.section}):\n${item.content}\n[Source: ${item.url}]\n`
-              ).join('\n');
+            console.log('[Chat] Found', gitbookSearchData.results.length, 'GitBook results');
+            
+            // Enhanced context with scoring information
+            gitbookContext = '\n\n📚 **Relevant Koasync GitBook Content (Ranked by Relevance):**\n' + 
+              gitbookSearchData.results.map((item: any, index: number) => {
+                const relevance = item.searchScore || item.relevance;
+                const keywords = item.matchedKeywords ? `[Matched: ${item.matchedKeywords.join(', ')}]` : '';
+                return `${index + 1}. **${item.title}** (${item.section}) - Relevance: ${relevance} ${keywords}\n${item.content}\n[Source: ${item.url}]\n`;
+              }).join('\n');
+            
+            // Add search summary
+            gitbookContext += `\n\n🔍 **Search Summary:** Found ${gitbookSearchData.results.length} relevant sections from Koasync GitBook. The content above is ranked by relevance to your query: "${userMessage.content}"`;
+          } else {
+            console.log('[Chat] No GitBook results found');
+            gitbookContext = '\n\n📚 **GitBook Search:** No specific Koasync documentation found for your query. I\'ll answer based on my general knowledge of Koasync.';
           }
         }
-      } catch (error) { console.error('[Chat] GitBook search error:', error); }
+      } catch (error) { 
+        console.error('[Chat] GitBook search error:', error);
+        gitbookContext = '\n\n📚 **GitBook Search:** Unable to search documentation at the same time. I\'ll answer based on my general knowledge.';
+      }
 
       console.log('[Chat] Sending question to GPT-4o mini with GitBook context');
 
@@ -508,17 +524,16 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
 
                 CRITICAL FORMATTING RULES:
-                - Put each sentence on a NEW LINE for better readability
-                - Start each sentence on its own line
-                - Use proper spacing between sentences
-                - Keep responses clean and easy to read
-                - ALWAYS format responses with each sentence on a separate line
+                - Keep responses SHORT and CLEAR (2-6 sentences maximum)
+                - Put each sentence on a NEW LINE for readability
+                - Focus on key facts from GitBook content
+                - Be warm but concise
                 - Example format:
                 "Hello there!
 
-                I'm so happy to see you today.
+                Based on the GitBook, Koasync integrates with Solana for real-time data persistence.
 
-                How can I help you with Koasync?"
+                The roadmap shows voice chat launching in Q1 2026."
 
                 Your knowledge includes:
                 - Koasync's philosophy of intimate AI experiences
@@ -542,7 +557,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               content: userMessage.content,
             },
           ],
-          max_tokens: 150,
+          max_tokens: 100,
           temperature: 0.7,
         }),
       });
