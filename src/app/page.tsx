@@ -102,15 +102,11 @@ export default function Home() {
         >
           READ GITBOOK
         </button>
-
-
-</div>
+      </div>
 
   
       Chat Modal
       <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-      
-
       
     </main>
   );
