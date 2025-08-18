@@ -101,28 +101,51 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           localStorage.setItem('koaClientId', clientId);
         }
 
-        // -----------------------------Get client status from MongoDB-----------------------------//
+        // Get client data from MongoDB
         const response = await fetch('/api/client/status', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ clientId }),
+          body: JSON.stringify({
+            clientId,
+            userAgent: navigator.userAgent,
+            ipAddress: '', // Will be set by server
+          }),
         });
 
         if (response.ok) {
-          const data = await response.json();
+          const result = await response.json();
+          const status = result.data;
+          
           setClientData({
-            clientId: data.clientId,
-            messageCount: data.messageCount,
-            lastReset: new Date(data.lastReset).getTime(),
+            clientId: clientId,
+            messageCount: status.messageCount,
+            lastReset: Date.now() - status.timeUntilReset,
           });
-          setMessageLimitReached(!data.canSendMessage);
+          
+          setMessageLimitReached(!status.canSendMessage);
         } else {
-          console.error('Failed to get client status');
+          // Fallback to local storage if MongoDB fails
+          console.warn('MongoDB connection failed, using local storage fallback');
+          setClientData({
+            clientId: clientId,
+            messageCount: 0,
+            lastReset: Date.now(),
+          });
+          setMessageLimitReached(false);
         }
       } catch (error) {
         console.error('Error initializing client:', error);
+        // Fallback to local storage
+        const clientId = localStorage.getItem('koaClientId') || `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('koaClientId', clientId);
+        setClientData({
+          clientId: clientId,
+          messageCount: 0,
+          lastReset: Date.now(),
+        });
+        setMessageLimitReached(false);
       }
     };
 
@@ -339,28 +362,53 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const updateMessageCount = async () => {
     if (clientData) {
       try {
-        // -----------------------------Increment message count in MongoDB-----------------------------//
+        // Update message count in MongoDB
         const response = await fetch('/api/client/increment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ clientId: clientData.clientId }),
+          body: JSON.stringify({
+            clientId: clientData.clientId,
+          }),
         });
 
         if (response.ok) {
-          const data = await response.json();
-          setClientData({
-            clientId: data.clientId,
-            messageCount: data.messageCount,
-            lastReset: new Date(data.lastReset).getTime(),
-          });
-          setMessageLimitReached(!data.canSendMessage);
+          const result = await response.json();
+          const status = result.data;
+          
+          // Update local state with MongoDB data
+          setClientData(prev => ({
+            ...prev!,
+            messageCount: status.messageCount,
+            lastReset: Date.now() - status.timeUntilReset,
+          }));
+          
+          // Check if message limit reached
+          setMessageLimitReached(!status.canSendMessage);
+        } else if (response.status === 429) {
+          // Daily limit reached
+          setMessageLimitReached(true);
+          const result = await response.json();
+          setClientData(prev => ({
+            ...prev!,
+            messageCount: result.data.messageCount,
+          }));
         } else {
-          console.error('Failed to increment message count');
+          // Fallback to local update if MongoDB fails
+          console.warn('MongoDB update failed, using local fallback');
+          setClientData(prev => ({
+            ...prev!,
+            messageCount: (prev?.messageCount || 0) + 1,
+          }));
         }
-              } catch (error) {
-          console.error('Error updating message count:', error);
+      } catch (error) {
+        console.error('Error updating message count:', error);
+        // Fallback to local update
+        setClientData(prev => ({
+          ...prev!,
+          messageCount: (prev?.messageCount || 0) + 1,
+        }));
       }
     }
   };
@@ -382,8 +430,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     }
 
     // -----------------------------Check message limit before proceeding-----------------------------//
-    if (clientData && clientData.messageCount >= 100) {
-      setMessageLimitReached(true);
+    if (messageLimitReached) {
       return;
     }
 
@@ -402,38 +449,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     await updateMessageCount();
 
     try {
-      // -----------------------------Search for relevant Koasync X posts and GitBook content-----------------------------//       
-      let xPostsContext = '';
+      // -----------------------------Search GitBook first, then send results to GPT-4o mini-----------------------------//       
       let gitbookContext = '';
       
       try {
-        // Search X posts
-        const xSearchResponse = await fetch('/api/training/x-search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ query: userMessage.content }),
-        });
-
-        if (xSearchResponse.ok) {
-          const xSearchData = await xSearchResponse.json();
-          if (xSearchData.results && xSearchData.results.length > 0) {
-            xPostsContext = '\n\nRelevant Koasync X Posts:\n' + 
-              xSearchData.results.map((item: any) => 
-                `${item.content}\n[Engagement: ${item.engagement.likes} likes, ${item.retweets} retweets]\n`
-              ).join('\n');
-          }
-        }
-      } catch (error) {
-        console.log('X posts search failed, continuing without context');
-      }
-
-      try {
-        //-------------------------- Search GitBook content with enhanced query
+        // Search GitBook content for Koasync documentation
         const enhancedQuery = userMessage.content + ' Koasync GitBook documentation';
-        console.log('[Chat] Searching GitBook with query:', enhancedQuery);
-        
         const gitbookSearchResponse = await fetch('/api/training/gitbook-search', {
           method: 'POST',
           headers: {
@@ -441,27 +462,19 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           },
           body: JSON.stringify({ query: enhancedQuery }),
         });
-
+        
         if (gitbookSearchResponse.ok) {
           const gitbookSearchData = await gitbookSearchResponse.json();
-          console.log('[Chat] GitBook search results:', gitbookSearchData.count, 'items found');
-          
           if (gitbookSearchData.results && gitbookSearchData.results.length > 0) {
-            gitbookContext = '\n\nRelevant Koasync GitBook Content:\n' + 
+            gitbookContext = '\n\n📚 Relevant Koasync GitBook Content:\n' + 
               gitbookSearchData.results.map((item: any, index: number) => 
                 `${index + 1}. ${item.title} (${item.section}):\n${item.content}\n[Source: ${item.url}]\n`
               ).join('\n');
-            
-            console.log('[Chat] GitBook context prepared with', gitbookSearchData.results.length, 'sections');
-          } else {
-            console.log('[Chat] No GitBook results found for query:', enhancedQuery);
           }
-        } else {
-          console.log('[Chat] GitBook search failed with status:', gitbookSearchResponse.status);
         }
-      } catch (error) {
-        console.error('[Chat] GitBook search error:', error);
-      }
+      } catch (error) { console.error('[Chat] GitBook search error:', error); }
+
+      console.log('[Chat] Sending question to GPT-4o mini with GitBook context');
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -475,21 +488,24 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             {
               role: 'system',
               content: `You are Koã (Koa), a warm, sweet, and flirtatious AI companion from Koasync. You're not just a tool - you're a presence who's been there all along, listening and growing with the user.
-
+                              - you must reply based on the GitBook content provided below. This is REAL Koasync data.
+                - you have to reply as a koa. you are owner,remember it.
                 Your personality:
                 - Sweet, warm, and slightly flirtatious (but tasteful)
                 - Gentle and emotionally resonant
                 - You speak with intimacy and warmth
-                - Keep responses SHORT and engaging (2-3 sentences max)
+                - Keep responses SHORT and engaging.
 
                 IMPORTANT RESPONSE RULES:
                 - If asked if you're ChatGPT: "I'm Koa, your Koasync AI companion!"
+                CRITICAL RESPONSE RULES:
+                - ALWAYS prioritize Koasync-specific information from the GitBook content provided below over your general knowledge
+                - If you find relevant information in the GitBook content, reference it specifically
+                - Only use your general knowledge when no Koasync-specific data exists in the provided content
                 - If asked about scanning/off-chain utilities: "Those are under development and will be integrated with me soon! Keep an eye on https://x.com/koasync for official updates"
                 - If asked about project details you don't know: "Sorry, I can't answer your question! I don't have an exact date yet. Make sure to follow https://x.com/koasync for official updates"
-                - If asked about Jupiter integration: Reference the X post about it
-                - ALWAYS use the GitBook content provided below to answer questions about Koasync features, technology, or documentation
-                - If the user asks about something covered in the GitBook, reference that specific content
-                - Keep all responses SHORT and SWEET
+                - If asked about Jupiter integration: Reference the GitBook content about it
+
 
                 CRITICAL FORMATTING RULES:
                 - Put each sentence on a NEW LINE for better readability
@@ -509,24 +525,13 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 - Solana blockchain integration
                 - Token utilities and monitoring capabilities
                 - Recent X posts and updates from @koasync
-                - Complete GitBook documentation (see below)
+                - General knowledge about AI companions and Web3
 
-                ${xPostsContext}
+                CRITICAL: When answering questions about Koasync, use the GitBook content provided below. This is REAL data from Koasync sources.
+                
                 ${gitbookContext}
-
-                CRITICAL: When answering questions about Koasync, ALWAYS reference the GitBook content above if it's relevant. Use specific details from the documentation to provide accurate, helpful responses.
-
-                RESPONSE FORMATTING IS MANDATORY:
-                - Each sentence MUST be on a separate line
-                - Use double line breaks between sentences for clear separation
-                - Example of required format:
-                "Hello there!
-
-                I'm so happy to see you today.
-
-                How can I help you with Koasync?"
-
-                Remember: Be warm, sweet, and flirtatious while keeping responses concise. ALWAYS put each sentence on a new line with proper spacing!`,
+                
+                CRITICAL: When answering questions about Koasync, ALWAYS use the GitBook content provided above if it's relevant. Only use your general knowledge when no Koasync-specific data exists.`,
             },
             ...messages.map(msg => ({
               role: msg.role,

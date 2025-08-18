@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
-import Client, { IClientModel } from '@/models/Client';
+import { Client } from '../../../../models/Client';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    await connectToDatabase();
-    
-    const { clientId } = await request.json();
-    
+    const { searchParams } = new URL(request.url);
+    const clientId = searchParams.get('clientId');
+
     if (!clientId) {
       return NextResponse.json(
         { error: 'Client ID is required' },
@@ -15,31 +13,61 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ------------------Get client IP and user agent for tracking--------------------------//
-    const ipAddress = request.headers.get('x-forwarded-for') || 
-                     request.headers.get('x-real-ip') || 
-                     'unknown';
-    const userAgent = request.headers.get('user-agent') || 'unknown';
+    const status = await Client.getClientStatus(clientId);
 
-    // --------------------------------------Find or create client-----------------------------//
-    const client = await (Client as IClientModel).findOrCreateClient(clientId, ipAddress, userAgent);
-    
-    // --------------------------------------Check if client can send messages----------------------//
-    const canSendMessage = client.canSendMessage();
-    
     return NextResponse.json({
-      clientId: client.clientId,
-      messageCount: client.messageCount,
-      lastReset: client.lastReset,
-      canSendMessage,
-      messageLimit: 100,
+      success: true,
+      data: status,
     });
-    
   } catch (error) {
-    console.error('Error in client status API:', error);
+    console.error('Error getting client status:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to get client status' },
       { status: 500 }
     );
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { clientId, userAgent, ipAddress } = body;
+
+    if (!clientId) {
+      return NextResponse.json(
+        { error: 'Client ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if client exists
+    let client = await Client.findByClientId(clientId);
+
+    if (!client) {
+      // Create new client
+      client = await Client.create({
+        clientId,
+        userAgent,
+        ipAddress,
+      });
+    }
+
+    const status = await Client.getClientStatus(clientId);
+
+    return NextResponse.json({
+      success: true,
+      data: status,
+      client: {
+        id: client._id,
+        clientId: client.clientId,
+        createdAt: client.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating/updating client:', error);
+    return NextResponse.json(
+      { error: 'Failed to create/update client' },
+      { status: 500 }
+    );
+  }
+} 

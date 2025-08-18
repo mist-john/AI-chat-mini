@@ -1,107 +1,161 @@
-import mongoose, { Document, Model } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
-export interface IClient extends Document {
+export interface IClient {
+  _id?: ObjectId;
   clientId: string;
   messageCount: number;
-  lastReset: Date;
-  ipAddress?: string;
-  userAgent?: string;
+  lastReset: number;
   createdAt: Date;
   updatedAt: Date;
-  canSendMessage(): boolean;
-  incrementMessageCount(): void;
+  userAgent?: string;
+  ipAddress?: string;
+  lastActive: Date;
+  totalMessages: number;
+  isActive: boolean;
 }
 
-export interface IClientModel extends Model<IClient> {
-  findOrCreateClient(clientId: string, ipAddress?: string, userAgent?: string): Promise<IClient>;
+export interface IClientCreate {
+  clientId: string;
+  messageCount?: number;
+  lastReset?: number;
+  userAgent?: string;
+  ipAddress?: string;
 }
 
-const ClientSchema = new mongoose.Schema<IClient, IClientModel>(
-  {
-    clientId: {
-      type: String,
-      required: true,
-      unique: true,
-      index: true,
-    },
-    messageCount: {
-      type: Number,
-      required: true,
-      default: 0,
-      min: 0,
-    },
-    lastReset: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
-    ipAddress: {
-      type: String,
-      required: false,
-    },
-    userAgent: {
-      type: String,
-      required: false,
-    },
-  },
-  {
-    timestamps: true,
+export class Client {
+  static readonly COLLECTION_NAME = 'clients';
+  static readonly DAILY_MESSAGE_LIMIT = 100;
+  static readonly RESET_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  static async create(clientData: IClientCreate): Promise<IClient> {
+    const { getCollection } = await import('../lib/mongodb');
+    const collection = await getCollection(this.COLLECTION_NAME);
+
+    const now = new Date();
+    const client: IClient = {
+      clientId: clientData.clientId,
+      messageCount: clientData.messageCount || 0,
+      lastReset: clientData.lastReset || now.getTime(),
+      createdAt: now,
+      updatedAt: now,
+      userAgent: clientData.userAgent,
+      ipAddress: clientData.ipAddress,
+      lastActive: now,
+      totalMessages: 0,
+      isActive: true,
+    };
+
+    const result = await collection.insertOne(client);
+    return { ...client, _id: result.insertedId };
   }
-);
 
-// -----------------------------Index for efficient queries-----------------------------//
-ClientSchema.index({ lastReset: 1 });
+  static async findByClientId(clientId: string): Promise<IClient | null> {
+    const { getCollection } = await import('../lib/mongodb');
+    const collection = await getCollection(this.COLLECTION_NAME);
 
-// -----------------------------Instance method to check if client can send messages-----------------------------//
-ClientSchema.methods.canSendMessage = function(): boolean {
-  const now = new Date();
-  const oneDay = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-  
-  // -----------------------------Check if it's been more than 24 hours since last reset-----------------------------//
-  if (now.getTime() - this.lastReset.getTime() > oneDay) {
-    return true; // Can send message, will reset
+    return await collection.findOne({ clientId }) as IClient | null;
   }
-  
-  // -----------------------------Check if message limit is reached-----------------------------//
-  return this.messageCount < 100;
-};
 
-// -----------------------------Instance method to increment message count-----------------------------//
-ClientSchema.methods.incrementMessageCount = function(): void {
-  const now = new Date();
-  const oneDay = 24 * 60 * 60 * 1000;
-  
-  // -----------------------------Check if it's been more than 24 hours since last reset-----------------------------//
-  if (now.getTime() - this.lastReset.getTime() > oneDay) {
-    // -----------------------------Reset message count and update lastReset-----------------------------//
-    this.messageCount = 1;
-    this.lastReset = now;
-  } else {
-    // -----------------------------Increment message count-----------------------------//
-    this.messageCount += 1;
+  static async updateMessageCount(clientId: string, increment: number = 1): Promise<IClient | null> {
+    const { getCollection } = await import('../lib/mongodb');
+    const collection = await getCollection(this.COLLECTION_NAME);
+
+    const now = new Date();
+    const updateData: any = {
+      $inc: { 
+        messageCount: increment,
+        totalMessages: increment 
+      },
+      $set: { 
+        updatedAt: now,
+        lastActive: now
+      }
+    };
+
+    // Check if we need to reset the daily count
+    const client = await this.findByClientId(clientId);
+    if (client) {
+      const timeSinceReset = now.getTime() - client.lastReset;
+      if (timeSinceReset >= this.RESET_INTERVAL) {
+        updateData.$set.lastReset = now.getTime();
+        updateData.$set.messageCount = increment; // Reset to current increment
+      }
+    }
+
+    const result = await collection.findOneAndUpdate(
+      { clientId },
+      updateData,
+      { returnDocument: 'after' }
+    );
+
+    return result as IClient | null;
   }
-};
 
-// -----------------------------Static method to find or create client-----------------------------//     
-ClientSchema.statics.findOrCreateClient = async function(
-  clientId: string,
-  ipAddress?: string,
-  userAgent?: string
-): Promise<IClient> {
-  let client = await this.findOne({ clientId });
-  
-  if (!client) {
-    client = new this({
-      clientId,
-      messageCount: 0,
-      lastReset: new Date(),
-      ipAddress,
-      userAgent,
-    });
-    await client.save();
+  static async canSendMessage(clientId: string): Promise<boolean> {
+    const client = await this.findByClientId(clientId);
+    if (!client) return true; // New client can send messages
+
+    const now = Date.now();
+    const timeSinceReset = now - client.lastReset;
+
+    // If it's been more than 24 hours, reset the count
+    if (timeSinceReset >= this.RESET_INTERVAL) {
+      return true;
+    }
+
+    // Check if under daily limit
+    return client.messageCount < this.DAILY_MESSAGE_LIMIT;
   }
-  
-  return client;
-};
 
-export default mongoose.models.Client || mongoose.model<IClient, IClientModel>('Client', ClientSchema);
+  static async getClientStatus(clientId: string): Promise<{
+    canSendMessage: boolean;
+    messageCount: number;
+    dailyLimit: number;
+    timeUntilReset: number;
+    isNewClient: boolean;
+  }> {
+    const client = await this.findByClientId(clientId);
+    const now = Date.now();
+
+    if (!client) {
+      return {
+        canSendMessage: true,
+        messageCount: 0,
+        dailyLimit: this.DAILY_MESSAGE_LIMIT,
+        timeUntilReset: 0,
+        isNewClient: true,
+      };
+    }
+
+    const timeSinceReset = now - client.lastReset;
+    const timeUntilReset = Math.max(0, this.RESET_INTERVAL - timeSinceReset);
+    const canSendMessage = client.messageCount < this.DAILY_MESSAGE_LIMIT;
+
+    return {
+      canSendMessage,
+      messageCount: client.messageCount,
+      dailyLimit: this.DAILY_MESSAGE_LIMIT,
+      timeUntilReset,
+      isNewClient: false,
+    };
+  }
+
+  static async deactivateClient(clientId: string): Promise<boolean> {
+    const { getCollection } = await import('../lib/mongodb');
+    const collection = await getCollection(this.COLLECTION_NAME);
+
+    const result = await collection.updateOne(
+      { clientId },
+      { $set: { isActive: false, updatedAt: new Date() } }
+    );
+
+    return result.modifiedCount > 0;
+  }
+
+  static async getActiveClients(): Promise<IClient[]> {
+    const { getCollection } = await import('../lib/mongodb');
+    const collection = await getCollection(this.COLLECTION_NAME);
+
+    return await collection.find({ isActive: true }).toArray() as IClient[];
+  }
+} 
