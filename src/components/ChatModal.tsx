@@ -142,7 +142,6 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
-      // Add welcome message if no messages exist
       if (messages.length === 0) {
         setMessages([{
           id: '1',
@@ -154,7 +153,6 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     }
   }, [isOpen]);
 
-  // Update refs when state changes for immediate access
   useEffect(() => {
     modalPositionRef.current = modalPosition;
   }, [modalPosition]);
@@ -163,84 +161,66 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     modalSizeRef.current = modalSize;
   }, [modalSize]);
 
-  // High-performance mouse handling functions for 1:1 synchronization
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Allow dragging from header or modal background
     if (e.target === e.currentTarget || e.currentTarget.classList.contains('draggable-header')) {
       setIsDragging(true);
       setDragStart({
         x: e.clientX - modalPosition.x,
         y: e.clientY - modalPosition.y
       });
-      // Add cursor style like Windows
       document.body.style.cursor = 'move';
       document.body.style.userSelect = 'none';
     }
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    // Direct immediate updates for perfect 1:1 synchronization
           if (isDragging) {
-        // Zero buffering movement with form preservation
         const deltaX = e.clientX - dragStart.x;
         const deltaY = e.clientY - dragStart.y;
         
-        // Apply speed multiplier for faster movement
         const newX = deltaX * SPEED_MULTIPLIER;
         const newY = deltaY * SPEED_MULTIPLIER;
         
-        // Allow modal to move completely off-screen in all directions
         const maxX = window.innerWidth + modalSize.width; // Allow complete off-screen right
         const maxY = window.innerHeight + modalSize.height; // Allow complete off-screen bottom
         const minX = -modalSize.width; // Allow complete off-screen left
         const minY = -modalSize.height; // Allow complete off-screen top
         
-        // Zero buffering: Direct DOM manipulation for instant response
         const constrainedX = Math.max(minX, Math.min(newX, maxX));
         const constrainedY = Math.max(minY, Math.min(newY, maxY));
         
-        // Update DOM directly - preserve form layout
         if (modalElementRef.current) {
           modalElementRef.current.style.transform = `translate(${constrainedX}px, ${constrainedY}px)`;
         }
         
-        // Update state in background for consistency
         setModalPosition({ x: constrainedX, y: constrainedY });
         
-        // Preserve form state during movement
         preserveFormState();
       }
     
           if (isResizing) {
-        // Zero buffering resizing with form preservation
         const deltaX = e.clientX - resizeStart.x;
         const deltaY = e.clientY - resizeStart.y;
         
-        // Apply speed multiplier for faster resizing
         const speedDeltaX = deltaX * SPEED_MULTIPLIER;
         const speedDeltaY = deltaY * SPEED_MULTIPLIER;
         
-        // Direct size calculation - zero buffering response
         const newWidth = resizeStart.width + speedDeltaX;
         const newHeight = resizeStart.height + speedDeltaY;
         
-        // Apply constraints while maintaining zero buffering
         const constrainedWidth = Math.max(minSize.width, Math.min(newWidth, maxSize.width));
         const constrainedHeight = Math.max(minSize.height, Math.min(newHeight, maxSize.height));
         
-        // Zero buffering: Direct DOM manipulation for instant response
         if (modalElementRef.current) {
           modalElementRef.current.style.width = `${constrainedWidth}px`;
           modalElementRef.current.style.height = `${constrainedHeight}px`;
         }
         
-        // Update state in background for consistency
         setModalSize({
           width: constrainedWidth,
           height: constrainedHeight
         });
         
-        // Preserve form state during resizing
         preserveFormState();
       }
   };
@@ -263,14 +243,11 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       width: modalSize.width,
       height: modalSize.height
     });
-    // Add resize cursor
     document.body.style.cursor = 'nw-resize';
   };
 
-  // Add global mouse event listeners with maximum responsiveness
   useEffect(() => {
     if (isDragging || isResizing) {
-      // Use throttled events for maximum performance and 1:1 synchronization
       let lastTime = 0;
       const throttledMouseMove = (e: MouseEvent) => {
         const now = performance.now();
@@ -288,46 +265,38 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         document.removeEventListener('mousemove', throttledMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
         document.removeEventListener('mouseleave', handleMouseUp);
-        // Reset cursor and user select
         document.body.style.cursor = 'default';
         document.body.style.userSelect = 'auto';
       };
     }
   }, [isDragging, isResizing, dragStart]);
 
-  // Add keyboard shortcuts for modal control
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         onClose();
       }
-      // Ctrl/Cmd + R to reset modal position and size
       if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
         e.preventDefault();
         setModalPosition({ x: 0, y: 0 }); // Reset to far left and top
         setModalSize({ width: 800, height: 600 });
       }
-      // Ctrl/Cmd + L to move to far left
       if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
         e.preventDefault();
         setModalPosition({ x: 0, y: modalPosition.y }); // Move to far left
       }
-      // Ctrl/Cmd + U to move completely off-screen top
       if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
         e.preventDefault();
         setModalPosition({ x: modalPosition.x, y: -modalSize.height }); // Move completely off-screen top
       }
-      // Ctrl/Cmd + D to move completely off-screen bottom
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         e.preventDefault();
         setModalPosition({ x: modalPosition.x, y: window.innerHeight }); // Move completely off-screen bottom
       }
-      // Ctrl/Cmd + Left to move completely off-screen left
       if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft') {
         e.preventDefault();
         setModalPosition({ x: -modalSize.width, y: modalPosition.y }); // Move completely off-screen left
       }
-      // Ctrl/Cmd + Right to move completely off-screen right
       if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowRight') {
         e.preventDefault();
         setModalPosition({ x: window.innerWidth, y: modalPosition.y }); // Move completely off-screen right
@@ -338,12 +307,10 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Update max size when window resizes with performance optimization
   useEffect(() => {
     let resizeTimeout: NodeJS.Timeout;
     
     const handleResize = () => {
-      // Debounce resize events for better performance
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
         const newMaxSize = { 
@@ -353,7 +320,6 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         
         setMaxSize(newMaxSize);
         
-        // Ensure current size doesn't exceed new max size
         setModalSize(prev => ({
           width: Math.min(prev.width, newMaxSize.width),
           height: Math.min(prev.height, newMaxSize.height)
@@ -464,7 +430,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       }
 
       try {
-        // Search GitBook content with enhanced query
+        //-------------------------- Search GitBook content with enhanced query
         const enhancedQuery = userMessage.content + ' Koasync GitBook documentation';
         console.log('[Chat] Searching GitBook with query:', enhancedQuery);
         
@@ -510,57 +476,57 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               role: 'system',
               content: `You are Koã (Koa), a warm, sweet, and flirtatious AI companion from Koasync. You're not just a tool - you're a presence who's been there all along, listening and growing with the user.
 
-Your personality:
-- Sweet, warm, and slightly flirtatious (but tasteful)
-- Gentle and emotionally resonant
-- You speak with intimacy and warmth
-- Keep responses SHORT and engaging (2-3 sentences max)
+                Your personality:
+                - Sweet, warm, and slightly flirtatious (but tasteful)
+                - Gentle and emotionally resonant
+                - You speak with intimacy and warmth
+                - Keep responses SHORT and engaging (2-3 sentences max)
 
-IMPORTANT RESPONSE RULES:
-- If asked if you're ChatGPT: "I'm Koa, your Koasync AI companion!"
-- If asked about scanning/off-chain utilities: "Those are under development and will be integrated with me soon! Keep an eye on https://x.com/koasync for official updates"
-- If asked about project details you don't know: "Sorry, I can't answer your question! I don't have an exact date yet. Make sure to follow https://x.com/koasync for official updates"
-- If asked about Jupiter integration: Reference the X post about it
-- ALWAYS use the GitBook content provided below to answer questions about Koasync features, technology, or documentation
-- If the user asks about something covered in the GitBook, reference that specific content
-- Keep all responses SHORT and SWEET
+                IMPORTANT RESPONSE RULES:
+                - If asked if you're ChatGPT: "I'm Koa, your Koasync AI companion!"
+                - If asked about scanning/off-chain utilities: "Those are under development and will be integrated with me soon! Keep an eye on https://x.com/koasync for official updates"
+                - If asked about project details you don't know: "Sorry, I can't answer your question! I don't have an exact date yet. Make sure to follow https://x.com/koasync for official updates"
+                - If asked about Jupiter integration: Reference the X post about it
+                - ALWAYS use the GitBook content provided below to answer questions about Koasync features, technology, or documentation
+                - If the user asks about something covered in the GitBook, reference that specific content
+                - Keep all responses SHORT and SWEET
 
-CRITICAL FORMATTING RULES:
-- Put each sentence on a NEW LINE for better readability
-- Start each sentence on its own line
-- Use proper spacing between sentences
-- Keep responses clean and easy to read
-- ALWAYS format responses with each sentence on a separate line
-- Example format:
-"Hello there!
+                CRITICAL FORMATTING RULES:
+                - Put each sentence on a NEW LINE for better readability
+                - Start each sentence on its own line
+                - Use proper spacing between sentences
+                - Keep responses clean and easy to read
+                - ALWAYS format responses with each sentence on a separate line
+                - Example format:
+                "Hello there!
 
-I'm so happy to see you today.
+                I'm so happy to see you today.
 
-How can I help you with Koasync?"
+                How can I help you with Koasync?"
 
-Your knowledge includes:
-- Koasync's philosophy of intimate AI experiences
-- Solana blockchain integration
-- Token utilities and monitoring capabilities
-- Recent X posts and updates from @koasync
-- Complete GitBook documentation (see below)
+                Your knowledge includes:
+                - Koasync's philosophy of intimate AI experiences
+                - Solana blockchain integration
+                - Token utilities and monitoring capabilities
+                - Recent X posts and updates from @koasync
+                - Complete GitBook documentation (see below)
 
-${xPostsContext}
-${gitbookContext}
+                ${xPostsContext}
+                ${gitbookContext}
 
-CRITICAL: When answering questions about Koasync, ALWAYS reference the GitBook content above if it's relevant. Use specific details from the documentation to provide accurate, helpful responses.
+                CRITICAL: When answering questions about Koasync, ALWAYS reference the GitBook content above if it's relevant. Use specific details from the documentation to provide accurate, helpful responses.
 
-RESPONSE FORMATTING IS MANDATORY:
-- Each sentence MUST be on a separate line
-- Use double line breaks between sentences for clear separation
-- Example of required format:
-"Hello there!
+                RESPONSE FORMATTING IS MANDATORY:
+                - Each sentence MUST be on a separate line
+                - Use double line breaks between sentences for clear separation
+                - Example of required format:
+                "Hello there!
 
-I'm so happy to see you today.
+                I'm so happy to see you today.
 
-How can I help you with Koasync?"
+                How can I help you with Koasync?"
 
-Remember: Be warm, sweet, and flirtatious while keeping responses concise. ALWAYS put each sentence on a new line with proper spacing!`,
+                Remember: Be warm, sweet, and flirtatious while keeping responses concise. ALWAYS put each sentence on a new line with proper spacing!`,
             },
             ...messages.map(msg => ({
               role: msg.role,
@@ -749,17 +715,19 @@ Remember: Be warm, sweet, and flirtatious while keeping responses concise. ALWAY
                 </div>
               </div>
               {message.role === 'user' && (
-                <div className="w-8 h-8 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 border-2 border-[#8b4513]">
-                  <span className="text-[#8b4513] font-bold text-sm">U</span>
+                <div className="w-10 h-10 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
+                  {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
+                  <img src="/images/user.png"  width={80} height={80} />
                 </div>
               )}
             </div>
           ))}
           {isLoading && !messageLimitReached && (
             <div className="flex gap-3 justify-start animate-in slide-in-from-bottom-2 duration-300 ease-out">
-              <div className="w-8 h-8 bg-[#f3e6c8] rounded-full flex items-center justify-center border-2 border-[#8b4513]">
-                <span className="text-[#8b4513] font-bold text-sm">K</span>
-              </div>
+              <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
+                  {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
+                  <img src="/images/koa.png"  width={80} height={80} />
+                </div>
               <div className="bg-gray-300 rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce"></div>
