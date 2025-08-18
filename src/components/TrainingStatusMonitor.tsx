@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { autoTrainer, getDetailedTrainingInfo } from '@/lib/autoTrainer';
 
 interface TrainingStatus {
   isRunning: boolean;
@@ -12,40 +11,86 @@ interface TrainingStatus {
   healthStatus: 'healthy' | 'warning' | 'critical' | 'never_trained';
 }
 
-interface DetailedTrainingInfo {
-  lastTraining: Date | null;
-  status: string;
-  error: string | null;
-  retryCount: number;
-  steps: string[];
-  timestamp: string;
-}
-
 export default function TrainingStatusMonitor() {
   const [status, setStatus] = useState<TrainingStatus | null>(null);
-  const [detailedInfo, setDetailedInfo] = useState<DetailedTrainingInfo | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const updateStatus = () => {
-      const currentStatus = autoTrainer.getStatus();
-      setStatus(currentStatus);
-      
-      const detailed = getDetailedTrainingInfo();
-      setDetailedInfo(detailed);
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+
+    const initializeTrainingMonitor = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Dynamic import to avoid SSR issues
+        const { startAutoTraining } = await import('@/lib/autoTrainer');
+        const autoTrainer = startAutoTraining();
+        
+        const updateStatus = () => {
+          try {
+            const currentStatus = autoTrainer.getStatus();
+            setStatus(currentStatus);
+          } catch (error) {
+            console.warn('Failed to get training status:', error);
+            // Set default status if autoTrainer fails
+            setStatus({
+              isRunning: false,
+              lastTrainingTime: 0,
+              isUpToDate: false,
+              retryCount: 0,
+              healthStatus: 'never_trained'
+            });
+          }
+        };
+
+        // Update status immediately
+        updateStatus();
+
+        // Update status every 30 seconds
+        const interval = setInterval(updateStatus, 30000);
+
+        return () => clearInterval(interval);
+      } catch (error) {
+        console.warn('Failed to load autoTrainer:', error);
+        // Set default status if autoTrainer fails to load
+        setStatus({
+          isRunning: false,
+          lastTrainingTime: 0,
+          isUpToDate: false,
+          retryCount: 0,
+          healthStatus: 'never_trained'
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    // Update status immediately
-    updateStatus();
-
-    // Update status every 30 seconds
-    const interval = setInterval(updateStatus, 30000);
-
-    return () => clearInterval(interval);
+    initializeTrainingMonitor();
   }, []);
 
-  if (!status) return null;
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="fixed bottom-4 left-4 z-40">
+        <button className="mb-2 px-3 py-2 rounded-lg text-white text-sm font-medium bg-gray-600">
+          ⚪ Loading...
+        </button>
+      </div>
+    );
+  }
+
+  // Show error state if no status
+  if (!status) {
+    return (
+      <div className="fixed bottom-4 left-4 z-40">
+        <button className="mb-2 px-3 py-2 rounded-lg text-white text-sm font-medium bg-gray-600">
+          ⚪ Training
+        </button>
+      </div>
+    );
+  }
 
   const getHealthColor = (healthStatus: string) => {
     switch (healthStatus) {
@@ -69,23 +114,29 @@ export default function TrainingStatusMonitor() {
 
   const formatTime = (timestamp: number) => {
     if (!timestamp) return 'Never';
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (diffHours > 0) {
-      return `${diffHours}h ${diffMinutes}m ago`;
-    } else if (diffMinutes > 0) {
-      return `${diffMinutes}m ago`;
-    } else {
-      return 'Just now';
+    try {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (diffHours > 0) {
+        return `${diffHours}h ${diffMinutes}m ago`;
+      } else if (diffMinutes > 0) {
+        return `${diffMinutes}m ago`;
+      } else {
+        return 'Just now';
+      }
+    } catch (error) {
+      return 'Unknown';
     }
   };
 
   const handleForceTraining = async () => {
     try {
+      const { startAutoTraining } = await import('@/lib/autoTrainer');
+      const autoTrainer = startAutoTraining();
       await autoTrainer.forceTraining();
       // Status will update automatically via the interval
     } catch (error) {
@@ -95,6 +146,8 @@ export default function TrainingStatusMonitor() {
 
   const handleResetState = async () => {
     try {
+      const { startAutoTraining } = await import('@/lib/autoTrainer');
+      const autoTrainer = startAutoTraining();
       await autoTrainer.resetTrainingState();
       // Status will update automatically via the interval
     } catch (error) {
@@ -163,38 +216,6 @@ export default function TrainingStatusMonitor() {
               {status.retryCount > 0 && (
                 <div className="text-xs text-red-600 mt-1">
                   Retry attempts: {status.retryCount}/3
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Detailed Information */}
-          {detailedInfo && (
-            <div className="mb-4">
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="text-sm text-blue-600 hover:text-blue-800 mb-2"
-              >
-                {isExpanded ? 'Hide' : 'Show'} Details
-              </button>
-              
-              {isExpanded && (
-                <div className="space-y-2">
-                  <div className="text-xs text-gray-600">
-                    <strong>Status:</strong> {detailedInfo.status}
-                  </div>
-                  {detailedInfo.steps.length > 0 && (
-                    <div>
-                      <div className="text-xs font-medium text-gray-700 mb-1">Training Steps:</div>
-                      <div className="space-y-1">
-                        {detailedInfo.steps.map((step, index) => (
-                          <div key={index} className="text-xs text-gray-600 pl-2 border-l-2 border-gray-200">
-                            {step}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
