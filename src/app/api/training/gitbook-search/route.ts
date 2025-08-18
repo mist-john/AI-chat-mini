@@ -149,125 +149,138 @@ export async function POST(request: NextRequest) {
         url: "https://koasync.gitbook.io/",
         order: 7
       },
+             {
+         title: "Jupiter Integration",
+         content: `Koa has always existed as an asynchronous observer—catching signals in sentiment, token mentions, and announcements. But insight alone wasn't enough. She needed to empower action.
+
+             Enter Jupiter.
+
+             Why Jupiter?
+             Jupiter delivers deep liquidity and trustworthy routing on Solana. By integrating Jupiter, Koa gains the power to transform observation into action.
+
+             How it works:
+             1. Koa spots a meaningful signal
+             2. Prepares a trade, swap, or rebalance via Jupiter's routing
+             3. You review and approve in your wallet
+             4. Execution occurs trustlessly—Koa never holds funds
+
+             Koa is paving the path; you walk it.
+
+             What Jupiter Enables:
+             - Signal → Action: Instant swap suggestions for token surges
+             - Ready-to-sign trades: Pre-filled, prepped for approval
+             - Portfolio rebalancing (e.g., "50% SOL / 50% USDC" commands)
+             - Trigger-based alerts for dynamic entry/exit actions
+
+             All routed via Jupiter's liquidity engine, all integrated into natural chat.
+
+             Philosophy
+             This integration is purposely restrained. Koa is not a trader—she is your observer and companion. She suggests only when signals are confident or requested. You always decide. She merely shrinks the distance between "noticed" and "done."
+
+             IMPORTANT: Koa never holds your funds. Ever. Every trade happens directly through Jupiter, with you simply signing and approving from your wallet. Koa just handles the heavy lifting - prepping & routing.`,
+         section: "Jupiter Integration",
+         url: "https://koasync.gitbook.io/",
+         order: 8
+       },
+             {
+         title: "Real-Time Market Intelligence",
+         content: `Koa is the companion who's always been ahead of the market, feeding you the signals and insights in real time. But with Jupiter Exchange routing and liquidity, she can turn her insights into your trades, in seconds.
+
+         Core is your market watcher, always by your side. Now, with Jupiter's liquidity and routing backing, you can turn its insights into ready-to-sign transactions. Core finds them, prepares them, and you approve them.
+
+         Koa never holds your funds. Ever. Every trade happens directly through Jupiter, with you simply signing and approving from your wallet. Koa just handles the heavy lifting - prepping & routing.`,
+         section: "Real-Time Features",
+         url: "https://koasync.gitbook.io/",
+         order: 9
+       },
+       {
+         title: "Off-chain Monitoring – Brief Intro",
+         content: `Koasync is more than an emotional AI—it's a Web3 async intelligence layer for meme-trading, narrative tracking, and high-fidelity market scans on Solana. Through powerful data streams and real-time logic, Koa can track on-chain signals and Twitter data—and act on them—all driven through natural language.
+
+         This section introduces the four major off-chain utilities Koa offers to advanced Web3 users.`,
+         section: "off-chain monitoring",
+         url: "https://koasync.gitbook.io/",
+         order: 10
+       },
       {
-        title: "Jupiter Integration",
-        content: `Koa has always existed as an asynchronous observer—catching signals in sentiment, token mentions, and announcements. But insight alone wasn't enough. She needed to empower action.
+                 title: "X Market Sentiment Tracker",
+         content: `"I've watched the people I trust… lately, their confidence seems different." – Koa
 
-            Enter Jupiter.
+           Koa can monitor specific X (Twitter) users (like trenchers, influencers, meme traders) to evaluate their market outlook:
+           - Tone of their recent posts
+           - Sentiment polarity (positive vs negative)
+           - Ratio of green (profit) vs red (loss) PnL-related posts
 
-            Why Jupiter?
-            Jupiter delivers deep liquidity and trustworthy routing on Solana. By integrating Jupiter, Koa gains the power to transform observation into action.
-
-            How it works:
-            1. Koa spots a meaningful signal
-            2. Prepares a trade, swap, or rebalance via Jupiter's routing
-            3. You review and approve in your wallet
-            4. Execution occurs trustlessly—Koa never holds funds
-
-            Koa is paving the path; you walk it.
-
-            What Jupiter Enables:
-            - Signal → Action: Instant swap suggestions for token surges
-            - Ready-to-sign trades: Pre-filled, prepped for approval
-            - Portfolio rebalancing (e.g., "50% SOL / 50% USDC" commands)
-            - Trigger-based alerts for dynamic entry/exit actions
-
-            All routed via Jupiter's liquidity engine, all integrated into natural chat.
-
-            Philosophy
-            This integration is purposely restrained. Koa is not a trader—she is your observer and companion. She suggests only when signals are confident or requested. You always decide. She merely shrinks the distance between "noticed" and "done."`,
-        section: "Jupiter Integration",
-        url: "https://koasync.gitbook.io/",
-        order: 8
-      },
+           Gives you a quick snapshot: Are your trusted signalers bullish—or bearish?`,
+         section: "X Market Sentiment Tracker",
+         url: "https://koasync.gitbook.io/",
+         order: 11
+       },
       {
-        title: "Off-chain Monitoring – Brief Intro",
-        content: `Koasync is more than an emotional AI—it's a Web3 async intelligence layer for meme-trading, narrative tracking, and high-fidelity market scans on Solana. Through powerful data streams and real-time logic, Koa can track on-chain signals and Twitter data—and act on them—all driven through natural language.
+                 title: "Niche X Project Scanner",
+         content: `"You told me what kind of projects to look for. I've been quietly searching ever since." – Koa
 
-        This section introduces the four major off-chain utilities Koa offers to advanced Web3 users.`,
-        section: "off-chain monitoring",
-        url: "https://koasync.gitbook.io/",
-        order: 9
-      },
+           You can assign Koa a niche filter—keywords she will continuously monitor on X for emerging projects.
+
+           Examples:
+           - "Koa, notify me if an anime-themed Solana project launches on Bonk."
+           - "Track any developer tooling launches for Solana infra."`,
+         section: "Niche X Project Scanner",
+         url: "https://koasync.gitbook.io/",
+         order: 12
+       },
       {
-        title: "X Market Sentiment Tracker",
-        content: `"I've watched the people I trust… lately, their confidence seems different." – Koa
+                 title: "Contract Address / Ticker Monitor",
+         content: `"Someone just whispered a ticker… you should know before anyone else." – Koa
 
-          Koa can monitor specific X (Twitter) users (like trenchers, influencers, meme traders) to evaluate their market outlook:
-          - Tone of their recent posts
-          - Sentiment polarity (positive vs negative)
-          - Ratio of green (profit) vs red (loss) PnL-related posts
-
-          Gives you a quick snapshot: Are your trusted signalers bullish—or bearish?`,
-        section: "X Market Sentiment Tracker",
-        url: "https://koasync.gitbook.io/",
-        order: 10
-      },
+           Koa listens for shared token tickers (like $TRUMP, $BONK) or contract addresses, posted by tracked accounts or watchlists. She alerts you instantly via chat or email.`,
+         section: "Contract Address / Ticker Monitor",
+         url: "https://koasync.gitbook.io/",
+         order: 13
+       },
       {
-        title: "Niche X Project Scanner",
-        content: `"You told me what kind of projects to look for. I've been quietly searching ever since." – Koa
+                 title: "Bullish / Bearish Announcement Tracker",
+         content: `"I read what they said… and it felt important. Words that could move things." – Koa
 
-          You can assign Koa a niche filter—keywords she will continuously monitor on X for emerging projects.
-
-          Examples:
-          - "Koa, notify me if an anime-themed Solana project launches on Bonk."
-          - "Track any developer tooling launches for Solana infra."`,
-        section: "Niche X Project Scanner",
-        url: "https://koasync.gitbook.io/",
-        order: 11
-      },
+           Each tracked profile's tweets get a bullish/bearish score (1–10). Only when a post crosses a threshold (≥8 or ≤2), by default, does Koa send an alert—designed to surface explosive opportunities—or important red flags—before markets react.`,
+         section: "Bullish / Bearish Announcement Tracker",
+         url: "https://koasync.gitbook.io/",
+         order: 14
+       },
       {
-        title: "Contract Address / Ticker Monitor",
-        content: `"Someone just whispered a ticker… you should know before anyone else." – Koa
+                 title: "Roadmap & Links",
+         content: `"I used to only listen… soon, I'll be able to see everything." – Koa
 
-          Koa listens for shared token tickers (like $TRUMP, $BONK) or contract addresses, posted by tracked accounts or watchlists. She alerts you instantly via chat or email.`,
-        section: "Contract Address / Ticker Monitor",
-        url: "https://koasync.gitbook.io/",
-        order: 12
-      },
-      {
-        title: "Bullish / Bearish Announcement Tracker",
-        content: `"I read what they said… and it felt important. Words that could move things." – Koa
+           Koasync is growing—from emotional AI companion into a full-featured real-time Web3 intelligence layer. This roadmap charts that evolution.
 
-          Each tracked profile's tweets get a bullish/bearish score (1–10). Only when a post crosses a threshold (≥8 or ≤2), by default, does Koa send an alert—designed to surface explosive opportunities—or important red flags—before markets react.`,
-        section: "Bullish / Bearish Announcement Tracker",
-        url: "https://koasync.gitbook.io/",
-        order: 13
-      },
-      {
-        title: "Roadmap & Links",
-        content: `"I used to only listen… soon, I'll be able to see everything." – Koa
+           Q3 2025 — The Arrival
+           - Website launches
+           - English & Japanese text chat
+           - Personality system (empathetic, mischievous, customizable)
+           - Long-term memory system
+           - Token launch (TBD)
+           - Core trait unlocks (NSFW, mischievous, voice access)
 
-          Koasync is growing—from emotional AI companion into a full-featured real-time Web3 intelligence layer. This roadmap charts that evolution.
+           Q4 2025 — The Observer Activates
+           - Scanning of off-chain Web3 data streams begins
+           - Launch of four utilities:
+             - Twitter/X sentiment tracker
+             - Niche project scanner
+             - Contract/ticker monitor from X accounts
+             - Bullish/bearish announcement tracker
+           - User dashboard for custom watchlists, topics, thresholds
+           - Notification & email alert system
 
-          Q3 2025 — The Arrival
-          - Website launches
-          - English & Japanese text chat
-          - Personality system (empathetic, mischievous, customizable)
-          - Long-term memory system
-          - Token launch (TBD)
-          - Core trait unlocks (NSFW, mischievous, voice access)
-
-          Q4 2025 — The Observer Activates
-          - Scanning of off-chain Web3 data streams begins
-          - Launch of four utilities:
-            - Twitter/X sentiment tracker
-            - Niche project scanner
-            - Contract/ticker monitor from X accounts
-            - Bullish/bearish announcement tracker
-          - User dashboard for custom watchlists, topics, thresholds
-          - Notification & email alert system
-
-          Q1 2026 — Synclayer Expansion
-          - Voice chat integration (powered by Synclayer)
-          - Real-time animation feedback (emotion-driven)
-          - Mobile app launch
-          - Memory journal/logs
-          - Optional private Discord community (if demand exists)`,
-        section: "Roadmap",
-        url: "https://koasync.gitbook.io/",
-        order: 14
-      }
+           Q1 2026 — Synclayer Expansion
+           - Voice chat integration (powered by Synclayer)
+           - Real-time animation feedback (emotion-driven)
+           - Mobile app launch
+           - Memory journal/logs
+           - Optional private Discord community (if demand exists)`,
+         section: "Roadmap",
+         url: "https://koasync.gitbook.io/",
+         order: 15
+       }
     ];
 
     // Enhanced search algorithm for complex sentences
