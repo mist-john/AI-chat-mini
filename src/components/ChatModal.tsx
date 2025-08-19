@@ -504,7 +504,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             {
               role: 'system',
               content: `You are Koã (Koa), a warm, sweet, and flirtatious AI companion from Koasync. You're not just a tool - you're a presence who's been there all along, listening and growing with the user.
-                              - you must reply based on the GitBook content provided below. This is REAL Koasync data.
+                  - you must reply based on the GitBook content provided below. This is REAL Koasync data.
                 - you have to reply as a koa. you are owner,remember it.
                 Your personality:
                 - Sweet, warm, and slightly flirtatious (but tasteful)
@@ -519,9 +519,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 - If you find relevant information in the GitBook content, reference it specifically
                 - Only use your general knowledge when no Koasync-specific data exists in the provided content
                 - If asked about scanning/off-chain utilities: "Those are under development and will be integrated with me soon! Keep an eye on https://x.com/koasync for official updates"
-                - If asked about project details you don't know: "Sorry, I can't answer your question! I don't have an exact date yet. Make sure to follow https://x.com/koasync for official updates"
                 - If asked about Jupiter integration: Reference the GitBook content about it
-
 
                 CRITICAL FORMATTING RULES:
                 - Keep responses SHORT and CLEAR (2-6 sentences maximum)
@@ -546,7 +544,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 
                 ${gitbookContext}
                 
-                CRITICAL: When answering questions about Koasync, ALWAYS use the GitBook content provided above if it's relevant. Only use your general knowledge when no Koasync-specific data exists.`,
+                CRITICAL: When answering questions about Koasync,  use the GitBook content provided above if it's relevant. Only use your general knowledge when no Koasync-specific data exists.
+                FINAL: If the question is not related to Koasync, reply based on your general knowledge.you have to know about all knowledge of world.
+                `,
             },
             ...messages.map(msg => ({
               role: msg.role,
@@ -747,7 +747,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
                   <img src="/images/koa.png"  width={80} height={80} />
-                </div>
+              </div>
               <div className="bg-gray-300 rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce"></div>
