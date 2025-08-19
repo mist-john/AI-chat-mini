@@ -7,13 +7,13 @@ Create a file called `.env.local` in your project root with this exact content:
 
 ```bash
 # MongoDB Atlas Connection String (YOUR ACTUAL DATABASE)
-MONGODB_URI=mongodb+srv://0cjohncartor:n3EBtNsZSo52RYxx@koa.hgw7hff.mongodb.net/koa-chat?retryWrites=true&w=majority
+MONGODB_URI=
 
 # OpenAI API Key (YOU NEED TO GET THIS)
 NEXT_PUBLIC_OPENAI_API_KEY=sk-your_openai_api_key_here
 
 # Auto-training Secret Key (ALREADY GENERATED)
-AUTO_TRAIN_SECRET=08929dcf186beb5ce59a05b617640abb839239881566f2853a878dcde5953122
+AUTO_TRAIN_SECRET=
 ```
 
 ### **Step 2: Get OpenAI API Key**
@@ -44,9 +44,9 @@ AUTO_TRAIN_SECRET=08929dcf186beb5ce59a05b617640abb839239881566f2853a878dcde59531
 1. Push your code to GitHub
 2. Connect to Vercel
 3. Add these environment variables in Vercel dashboard:
-   - `MONGODB_URI` = `mongodb+srv://0cjohncartor:n3EBtNsZSo52RYxx@koa.hgw7hff.mongodb.net/koa-chat?retryWrites=true&w=majority`
+   - `MONGODB_URI` = ``
    - `NEXT_PUBLIC_OPENAI_API_KEY` = `your_openai_api_key`
-   - `AUTO_TRAIN_SECRET` = `08929dcf186beb5ce59a05b617640abb839239881566f2853a878dcde5953122`
+   - `AUTO_TRAIN_SECRET` = ``
 
 ## 🔧 **Auto-Training Features:**
 

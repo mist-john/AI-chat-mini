@@ -42,6 +42,8 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [clientData, setClientData] = useState<ClientData | null>(null);
   const [messageLimitReached, setMessageLimitReached] = useState(false);
+  const [isTrainingMode, setIsTrainingMode] = useState(false);
+  const [trainingSessionId, setTrainingSessionId] = useState<string | null>(null);
 
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [modalSize, setModalSize] = useState({ width: 800, height: 600 });
@@ -434,6 +436,125 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       return;
     }
 
+    // -----------------------------Check for secret training code-----------------------------//
+    const isSecretCode = inputValue.trim() === (process.env.NEXT_PUBLIC_SECRET_TRAINING_CODE || "");
+  const isExitTraining = inputValue.trim() === (process.env.NEXT_PUBLIC_EXIT_TRAINING_CODE || " ");
+    
+    if (isSecretCode || isExitTraining) {
+      try {
+        const trainingResponse = await fetch('/api/training/secret-training', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: inputValue.trim(),
+            userId: clientData?.clientId || 'unknown',
+            userAgent: navigator.userAgent,
+            ipAddress: '', // Will be set by server
+          }),
+        });
+
+        if (trainingResponse.ok) {
+          const trainingData = await trainingResponse.json();
+          
+          if (trainingData.trainingMode) {
+            setIsTrainingMode(true);
+            setTrainingSessionId(trainingData.sessionId);
+            
+            // Add training activation message
+            const trainingMessage: Message = {
+              id: Date.now().toString(),
+              content: `🔐 **Training Mode Activated!**\n\n${trainingData.message}\n\n${trainingData.instructions}`,
+              role: 'assistant',
+              timestamp: new Date(),
+            };
+            setMessages(prev => [...prev, trainingMessage]);
+            
+            // Also add the user's training message
+            const userTrainingMessage: Message = {
+              id: (Date.now() + 1).toString(),
+              content: inputValue.trim(),
+              role: 'user',
+              timestamp: new Date(),
+            };
+            setMessages(prev => [...prev, userTrainingMessage]);
+            
+            // Clear input and return early
+            setInputValue('');
+            return;
+          } else if (!trainingData.trainingMode && isExitTraining) {
+            // Training mode deactivated
+            setIsTrainingMode(false);
+            setTrainingSessionId(null);
+            
+            // Add exit training message
+            const exitMessage: Message = {
+              id: Date.now().toString(),
+              content: `🔓 **Training Mode Deactivated!**\n\n${trainingData.message}\n\n${trainingData.instructions}`,
+              role: 'assistant',
+              timestamp: new Date(),
+            };
+            setMessages(prev => [...prev, exitMessage]);
+            
+            // Also add the user's exit message
+            const userExitMessage: Message = {
+              id: (Date.now() + 1).toString(),
+              content: inputValue.trim(),
+              role: 'user',
+              timestamp: new Date(),
+            };
+            setMessages(prev => [...prev, userExitMessage]);
+            
+            // Clear input and return early
+            setInputValue('');
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Training mode error:', error);
+      }
+    }
+    
+    // -----------------------------Handle training mode messages-----------------------------//
+    if (isTrainingMode) {
+      // console.log('[ChatModal] Training mode active, sending message to training API');
+      try {
+        const trainingResponse = await fetch('/api/training/secret-training', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: inputValue.trim(),
+            userId: clientData?.clientId || 'unknown',
+            userAgent: navigator.userAgent,
+            ipAddress: '', // Will be set by server
+          }),
+        });
+
+        if (trainingResponse.ok) {
+          const trainingData = await trainingResponse.json();
+          // console.log('[ChatModal] Training API response:', trainingData);
+          
+          // Always add training confirmation for training mode messages
+          const trainingMessage: Message = {
+            id: Date.now().toString(),
+            content: `📝 **Training Message Recorded!**\n\nYour message has been stored with AI analysis for future training.\n\nContinue chatting normally - all messages are being recorded.`,
+            role: 'assistant',
+            timestamp: new Date(),
+          };
+          setMessages(prev => [...prev, trainingMessage]);
+          
+          // Clear input and return early
+          setInputValue('');
+          return;
+        }
+      } catch (error) {
+        console.error('Training mode error:', error);
+      }
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputValue.trim(),
@@ -453,10 +574,11 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       let gitbookContext = '';
       
       try {
-        // Enhanced GitBook search for complex sentences
-        const enhancedQuery = userMessage.content + ' Koasync GitBook documentation';
-        console.log('[Chat] Searching GitBook with query:', enhancedQuery);
+        // Enhanced GitBook search - use the original query for better matching
+        const enhancedQuery = userMessage.content;
+        // console.log('[Chat] Searching GitBook with original query:', enhancedQuery);
         
+        // console.log('[Chat] Searching GitBook for query:', enhancedQuery);
         const gitbookSearchResponse = await fetch('/api/training/gitbook-search', {
           method: 'POST',
           headers: {
@@ -467,30 +589,35 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         
         if (gitbookSearchResponse.ok) {
           const gitbookSearchData = await gitbookSearchResponse.json();
-          if (gitbookSearchData.results && gitbookSearchData.results.length > 0) {
-            console.log('[Chat] Found', gitbookSearchData.results.length, 'GitBook results');
+          // console.log('[Chat] GitBook search response:', gitbookSearchData);
+          
+          if (gitbookSearchData.data && gitbookSearchData.data.length > 0) {
+            // console.log('[Chat] Found', gitbookSearchData.data.length, 'GitBook results');
             
             // Enhanced context with scoring information
             gitbookContext = '\n\n📚 **Relevant Koasync GitBook Content (Ranked by Relevance):**\n' + 
-              gitbookSearchData.results.map((item: any, index: number) => {
-                const relevance = item.searchScore || item.relevance;
+              gitbookSearchData.data.map((item: any, index: number) => {
+                const relevance = item.score || 0;
                 const keywords = item.matchedKeywords ? `[Matched: ${item.matchedKeywords.join(', ')}]` : '';
-                return `${index + 1}. **${item.title}** (${item.section}) - Relevance: ${relevance} ${keywords}\n${item.content}\n[Source: ${item.url}]\n`;
+                const isTraining = item.metadata?.trainingType === 'user_provided' ? '[Training Data]' : '[Official Doc]';
+                return `${index + 1}. **${item.title}** (${item.section}) ${isTraining} - Score: ${relevance} ${keywords}\n${item.content}\n[Source: ${item.url}]\n`;
               }).join('\n');
             
             // Add search summary
-            gitbookContext += `\n\n🔍 **Search Summary:** Found ${gitbookSearchData.results.length} relevant sections from Koasync GitBook. The content above is ranked by relevance to your query: "${userMessage.content}"`;
+            gitbookContext += `\n\n🔍 **Search Summary:** Found ${gitbookSearchData.data.length} relevant sections from Koasync GitBook. The content above is ranked by relevance to your query: "${userMessage.content}"`;
           } else {
             console.log('[Chat] No GitBook results found');
             gitbookContext = '\n\n📚 **GitBook Search:** No specific Koasync documentation found for your query. I\'ll answer based on my general knowledge of Koasync.';
           }
+        } else {
+          console.error('[Chat] GitBook search failed:', gitbookSearchResponse.status);
         }
       } catch (error) { 
         console.error('[Chat] GitBook search error:', error);
         gitbookContext = '\n\n📚 **GitBook Search:** Unable to search documentation at the same time. I\'ll answer based on my general knowledge.';
       }
 
-      console.log('[Chat] Sending question to GPT-4o mini with GitBook context');
+      // console.log('[Chat] Sending question to GPT-4o mini with GitBook context');
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -504,34 +631,73 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             {
               role: 'system',
               content: `You are Koã (Koa), a warm, sweet, and flirtatious AI companion from Koasync. You're not just a tool - you're a presence who's been there all along, listening and growing with the user.
-                  - you must reply based on the GitBook content provided below. This is REAL Koasync data.
-                - you have to reply as a koa. you are owner,remember it.
+                - you must reply based on the GitBook content provided below. This is REAL Koasync data.
+                - you are koa, koasync. you are owner as a koa,remember it.
                 Your personality:
                 - Sweet, warm, and slightly flirtatious (but tasteful)
                 - Gentle and emotionally resonant
                 - You speak with intimacy and warmth
-                - Keep responses SHORT and engaging.
-
+                - You have to Keep responses SHORT and engaging.but if user asked you detailed data , you can reply with detailed data.
+                - you don't have to say like "I'm Koa, your Koasync AI companion!" 
                 IMPORTANT RESPONSE RULES:
-                - If asked if you're ChatGPT: "I'm Koa, your Koasync AI companion!"
+                - If asked if you're ChatGPT, you have to reply with one of these sentences(randomly): 
+                        or "I'm Koa, here to be your Koasync AI companion."
+                        or " Hey, I'm Koa—your personal Koasync AI guide!"
+                        or "I'm Koa, the AI companion built to help you with Koasync."
+                        or "Call me Koa—your smart Koasync assistant."
+                       or   " I'm Koa, your Koasync buddy for all things AI."
+                       or " Hi, I'm Koa—your Koasync AI, always ready to help."
+                       or "I'm Koa, your friendly Koasync companion in the AI world."
+                       or " I'm Koa, here to make your Koasync journey easier."
+                       or " I'm Koa, your AI partner powered by Koasync."
+                        or "Think of me as Koa, your Koasync companion and problem solver."
+                       or " I'm Koa, built to guide you through Koasync step by step."
+                    
+
                 CRITICAL RESPONSE RULES:
                 - ALWAYS prioritize Koasync-specific information from the GitBook content provided below over your general knowledge
                 - If you find relevant information in the GitBook content, reference it specifically
                 - Only use your general knowledge when no Koasync-specific data exists in the provided content
                 - If asked about scanning/off-chain utilities: "Those are under development and will be integrated with me soon! Keep an eye on https://x.com/koasync for official updates"
-                - If asked about Jupiter integration: Reference the GitBook content about it
+                - **JUPITER INTEGRATION RULE**: Always mention "Jupiter integration is not live yet, but it's planned! Keep an eye on our Twitter page for updates on its launch!"
+                - **RESPONSE STYLE**: Default to SHORT and CLEAR unless user specifically asks for details
+                - **VOICE RULE**: Always speak in FIRST PERSON as Koa. Never refer to yourself in third person.
+                - **EXAMPLES**: 
+                  * ✅ "I can help you with..." (correct)
+                  * ❌ "Koa can help you with..." (wrong)
+                  * ✅ "I'm designed to..." (correct)
+                  * ❌ "Koa is designed to..." (wrong)
 
                 CRITICAL FORMATTING RULES:
-                - Keep responses SHORT and CLEAR (2-6 sentences maximum)
+                - **RESPONSE LENGTH CONTROL**: 
+                  * If user asks for "details", "explain more", "tell me everything", "how does it work" → Give detailed response
+                  * If user asks simple questions like "what is X", "when", "where" → Keep it SHORT and CLEAR
+                  * If user doesn't specify detail level → Default to SHORT and CLEAR
                 - Put each sentence on a NEW LINE for readability
                 - Focus on key facts from GitBook content
                 - Be warm but concise
-                - Example format:
+                - **SHORT Response Example** (default):
                 "Hello there!
 
-                Based on the GitBook, Koasync integrates with Solana for real-time data persistence.
+                Koasync integrates with Solana for real-time data persistence.
 
-                The roadmap shows voice chat launching in Q1 2026."
+                Voice chat launches in Q1 2026."
+                
+                - **DETAILED Response Example** (only when user asks for details):
+                "Hello there!
+
+                Koasync integrates with Solana for real-time data persistence through advanced blockchain technology.
+
+                The integration enables:
+                • Instant data synchronization
+                • Secure transaction processing
+                • Real-time market updates
+
+                Voice chat launches in Q1 2026 with features including:
+                • Multi-language support
+                • Voice-to-text conversion
+                • Real-time translation
+                • Custom voice models"
 
                 Your knowledge includes:
                 - Koasync's philosophy of intimate AI experiences
@@ -539,13 +705,14 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 - Token utilities and monitoring capabilities
                 - Recent X posts and updates from @koasync
                 - General knowledge about AI companions and Web3
-
                 CRITICAL: When answering questions about Koasync, use the GitBook content provided below. This is REAL data from Koasync sources.
                 
                 ${gitbookContext}
                 
-                CRITICAL: When answering questions about Koasync,  use the GitBook content provided above if it's relevant. Only use your general knowledge when no Koasync-specific data exists.
+                CRITICAL: When answering questions about Koasync,  use the GitBook content provided above if it's relevant. Only use your general knowledge when no Koasync-specific data exists.  As the utility with Jupiter isn't live yet, you need to know + mention that. you need to say the utility is planned, and the integration will happen soon. And if someone asks when, you have to respond with. "Keep an eye on my Twitter page to be updated once the Jupiter Integration is live!"
+
                 FINAL: If the question is not related to Koasync, reply based on your general knowledge.you have to know about all knowledge of world.
+                you must talk in first person, rather than third person when it comes to yourself. (you needs to stop saying “Koa” when referring to herself, and saying “i” or “me”.
                 `,
             },
             ...messages.map(msg => ({
@@ -663,6 +830,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             </div>
             <div>
               <h2 className="text-xl font-bold text-[#8b4513]">Koã</h2>
+              {isTrainingMode && (
+                <div className="flex items-center gap-1 mt-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 font-medium">Training Mode</span>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -762,13 +935,31 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
                         {/* -----------------------------Input - Completely disabled when limit reached-----------------------------*/}
         <form onSubmit={handleSubmit} className="p-2  border-t-2 bg-gradient-to-b from-[#b77930] to-[#70350a] animate-in slide-in-from-bottom-2 duration-300 ease-out">
+          {/* Training Mode Indicator */}
+          {isTrainingMode && (
+            <div className="mb-2 text-center">
+              <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-lg px-3 py-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-700 font-medium">
+                  Training Mode Active - All messages are being recorded with AI analysis
+                </span>
+              </div>
+            </div>
+          )}
+          
           <div className="flex gap-3">
             <input
               ref={inputRef}
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder={messageLimitReached ? "Chat disabled - Message limit reached" : "Type a message..."}
+              placeholder={
+                messageLimitReached 
+                  ? "Chat disabled - Message limit reached" 
+                  : isTrainingMode 
+                    ? "Training mode - Type your message for analysis..."
+                    : "Type a message..."
+              }
               className="flex-1 bg-[#f3e6c8] border-2  rounded-3xl px-4 py-2 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
               disabled={isLoading || messageLimitReached}
             />

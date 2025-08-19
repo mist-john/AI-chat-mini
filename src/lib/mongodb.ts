@@ -15,6 +15,7 @@ let client: MongoClient | undefined;
 let clientPromise: Promise<MongoClient> | undefined;
 
 if (uri) {
+  // console.log(`[MongoDB] Connecting to: ${uri.split('@')[1]?.split('/')[0] || 'unknown'}`);
   // Use a global variable to preserve the connection across module reloads
   let globalWithMongo = global as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>;
@@ -25,6 +26,8 @@ if (uri) {
     globalWithMongo._mongoClientPromise = client.connect();
   }
   clientPromise = globalWithMongo._mongoClientPromise;
+} else {
+  console.warn('[MongoDB] No URI provided, cannot connect');
 }
 
 // Export a module-scoped MongoClient promise. By doing this in a
@@ -37,7 +40,9 @@ export async function getDatabase() {
     throw new Error('MongoDB connection not available');
   }
   const client = await clientPromise;
-  return client.db();
+  // Extract database name from MONGODB_URI
+  const dbName = process.env.MONGODB_URI?.split('/').pop()?.split('?')[0] || 'koa-chat';
+  return client.db(dbName);
 }
 
 // Helper function to get collection
