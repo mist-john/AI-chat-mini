@@ -9,7 +9,16 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'video.wixstatic.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
+    unoptimized: false,
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
   },
   eslint: {
     ignoreDuringBuilds: true,

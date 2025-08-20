@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { X, Send, Bot, User, AlertCircle } from 'lucide-react';
 
 interface Message {
@@ -44,6 +44,8 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const [messageLimitReached, setMessageLimitReached] = useState(false);
   const [isTrainingMode, setIsTrainingMode] = useState(false);
   const [trainingSessionId, setTrainingSessionId] = useState<string | null>(null);
+  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  const [showClearChatConfirm, setShowClearChatConfirm] = useState(false);
 
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [modalSize, setModalSize] = useState({ width: 800, height: 600 });
@@ -92,6 +94,77 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   // -----------------------------Get API key from environment variable-----------------------------//
   const API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
+  // -----------------------------Chat History Persistence Functions-----------------------------//
+  const saveChatHistory = useCallback((messages: Message[], clientId: string) => {
+    try {
+      const chatData = {
+        clientId,
+        messages,
+        lastUpdated: Date.now(),
+        sessionId: chatSessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      };
+      
+      // Save to localStorage only
+      localStorage.setItem(`chatHistory_${clientId}`, JSON.stringify(chatData));
+      
+      // Update session ID if it's new
+      if (!chatSessionId) {
+        setChatSessionId(chatData.sessionId);
+      }
+    } catch (error) {
+      console.error('Error saving chat history:', error);
+    }
+  }, [chatSessionId]);
+
+  const loadChatHistory = useCallback(async (clientId: string) => {
+    try {
+      // Load from localStorage only
+      const localChatData = localStorage.getItem(`chatHistory_${clientId}`);
+      if (localChatData) {
+        const parsed = JSON.parse(localChatData);
+        const lastUpdated = new Date(parsed.lastUpdated);
+        const hoursSinceUpdate = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
+        
+        // If chat history is less than 24 hours old, use it
+        if (hoursSinceUpdate < 24) {
+          setMessages(parsed.messages);
+          setChatSessionId(parsed.sessionId);
+          return true;
+        }
+      }
+      
+      // If no valid localStorage data, start with welcome message
+      return false;
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+      return false;
+    }
+  }, []);
+
+  const clearChatHistory = useCallback(async () => {
+    if (!clientData?.clientId) return;
+    
+    try {
+      // Clear from localStorage only
+      localStorage.removeItem(`chatHistory_${clientData.clientId}`);
+      
+      // Reset messages to welcome message
+      setMessages([{
+        id: '1',
+        content: 'Hello! I\'m Koã, your AI companion. How can I help you today?',
+        role: 'assistant',
+        timestamp: new Date(),
+      }]);
+      
+      // Reset session ID
+      setChatSessionId(null);
+      
+      setShowClearChatConfirm(false);
+    } catch (error) {
+      console.error('Error clearing chat history:', error);
+    }
+  }, [clientData?.clientId]);
+
   // -----------------------------Initialize or get client data from MongoDB-----------------------------//
   useEffect(() => {
     const initializeClient = async () => {
@@ -127,6 +200,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           });
           
           setMessageLimitReached(!status.canSendMessage);
+          
+          // Load chat history from localStorage
+          await loadChatHistory(clientId);
         } else {
           // Fallback to local storage if MongoDB fails
           console.warn('MongoDB connection failed, using local storage fallback');
@@ -136,6 +212,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             lastReset: Date.now(),
           });
           setMessageLimitReached(false);
+          
+          // Load chat history from localStorage
+          await loadChatHistory(clientId);
         }
       } catch (error) {
         console.error('Error initializing client:', error);
@@ -148,6 +227,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           lastReset: Date.now(),
         });
         setMessageLimitReached(false);
+        
+        // Load chat history from localStorage
+        await loadChatHistory(clientId);
       }
     };
 
@@ -163,6 +245,13 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-save chat history when messages change
+  useEffect(() => {
+    if (clientData?.clientId && messages.length > 0) {
+      saveChatHistory(messages, clientData.clientId);
+    }
+  }, [messages, clientData?.clientId, saveChatHistory]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -465,7 +554,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             // Add training activation message
             const trainingMessage: Message = {
               id: Date.now().toString(),
-              content: `🔐 **Training Mode Activated!**\n\n${trainingData.message}\n\n${trainingData.instructions}`,
+              content: `🔐 Training Mode Activated!\n\n${trainingData.message}\n\n${trainingData.instructions}`,
               role: 'assistant',
               timestamp: new Date(),
             };
@@ -491,7 +580,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             // Add exit training message
             const exitMessage: Message = {
               id: Date.now().toString(),
-              content: `🔓 **Training Mode Deactivated!**\n\n${trainingData.message}\n\n${trainingData.instructions}`,
+              content: `🔓 Training Mode Deactivated!\n\n${trainingData.message}\n\n${trainingData.instructions}`,
               role: 'assistant',
               timestamp: new Date(),
             };
@@ -540,7 +629,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           // Always add training confirmation for training mode messages
           const trainingMessage: Message = {
             id: Date.now().toString(),
-            content: `📝 **Training Message Recorded!**\n\nYour message has been stored with AI analysis for future training.\n\nContinue chatting normally - all messages are being recorded.`,
+            content: `📝 Training Message Recorded!\n\nYour message has been stored with AI analysis for future training.\n\nContinue chatting normally - all messages are being recorded.`,
             role: 'assistant',
             timestamp: new Date(),
           };
@@ -595,26 +684,26 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             // console.log('[Chat] Found', gitbookSearchData.data.length, 'GitBook results');
             
             // Enhanced context with scoring information
-            gitbookContext = '\n\n📚 **Relevant Koasync GitBook Content (Ranked by Relevance):**\n' + 
+            gitbookContext = '\n\n📚 Relevant Koasync GitBook Content (Ranked by Relevance):\n' + 
               gitbookSearchData.data.map((item: any, index: number) => {
                 const relevance = item.score || 0;
                 const keywords = item.matchedKeywords ? `[Matched: ${item.matchedKeywords.join(', ')}]` : '';
                 const isTraining = item.metadata?.trainingType === 'user_provided' ? '[Training Data]' : '[Official Doc]';
-                return `${index + 1}. **${item.title}** (${item.section}) ${isTraining} - Score: ${relevance} ${keywords}\n${item.content}\n[Source: ${item.url}]\n`;
+                return `${index + 1}. ${item.title} (${item.section}) ${isTraining} - Score: ${relevance} ${keywords}\n${item.content}\n[Source: ${item.url}]\n`;
               }).join('\n');
             
             // Add search summary
-            gitbookContext += `\n\n🔍 **Search Summary:** Found ${gitbookSearchData.data.length} relevant sections from Koasync GitBook. The content above is ranked by relevance to your query: "${userMessage.content}"`;
+            gitbookContext += `\n\n🔍 Search Summary: Found ${gitbookSearchData.data.length} relevant sections from Koasync GitBook. The content above is ranked by relevance to your query: "${userMessage.content}"`;
           } else {
             console.log('[Chat] No GitBook results found');
-            gitbookContext = '\n\n📚 **GitBook Search:** No specific Koasync documentation found for your query. I\'ll answer based on my general knowledge of Koasync.';
+            gitbookContext = '\n\n📚 GitBook Search: No specific Koasync documentation found for your query. I\'ll answer based on my general knowledge of Koasync.';
           }
         } else {
           console.error('[Chat] GitBook search failed:', gitbookSearchResponse.status);
         }
       } catch (error) { 
         console.error('[Chat] GitBook search error:', error);
-        gitbookContext = '\n\n📚 **GitBook Search:** Unable to search documentation at the same time. I\'ll answer based on my general knowledge.';
+        gitbookContext = '\n\n📚 GitBook Search: Unable to search documentation at the same time. I\'ll answer based on my general knowledge.';
       }
 
       // console.log('[Chat] Sending question to GPT-4o mini with GitBook context');
@@ -641,10 +730,10 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 - you don't have to say like "I'm Koa, your Koasync AI companion!" 
                 IMPORTANT RESPONSE RULES:
                 - If asked if you're ChatGPT, you have to reply with one of these sentences(randomly): 
-                        or "I'm Koa, here to be your Koasync AI companion."
-                        or " Hey, I'm Koa—your personal Koasync AI guide!"
-                        or "I'm Koa, the AI companion built to help you with Koasync."
-                        or "Call me Koa—your smart Koasync assistant."
+                      or "I'm Koa, here to be your Koasync AI companion."
+                      or " Hey, I'm Koa—your personal Koasync AI guide!"
+                      or "I'm Koa, the AI companion built to help you with Koasync."
+                      or "Call me Koa—your smart Koasync assistant."
                        or   " I'm Koa, your Koasync buddy for all things AI."
                        or " Hi, I'm Koa—your Koasync AI, always ready to help."
                        or "I'm Koa, your friendly Koasync companion in the AI world."
@@ -659,31 +748,33 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 - If you find relevant information in the GitBook content, reference it specifically
                 - Only use your general knowledge when no Koasync-specific data exists in the provided content
                 - If asked about scanning/off-chain utilities: "Those are under development and will be integrated with me soon! Keep an eye on https://x.com/koasync for official updates"
-                - **JUPITER INTEGRATION RULE**: Always mention "Jupiter integration is not live yet, but it's planned! Keep an eye on our Twitter page for updates on its launch!"
-                - **RESPONSE STYLE**: Default to SHORT and CLEAR unless user specifically asks for details
-                - **VOICE RULE**: Always speak in FIRST PERSON as Koa. Never refer to yourself in third person.
-                - **EXAMPLES**: 
+                - JUPITER INTEGRATION RULE: Always mention "Jupiter integration is not live yet, but it's planned! Keep an eye on our Twitter page for updates on its launch!"
+                - RESPONSE STYLE: Default to SHORT and CLEAR unless user specifically asks for details, but your Answer must include all normal knowledge about question from user.
+                - VOICE RULE: Always speak in FIRST PERSON as Koa. Never refer to yourself in third person.
+                - EXAMPLES: 
                   * ✅ "I can help you with..." (correct)
                   * ❌ "Koa can help you with..." (wrong)
                   * ✅ "I'm designed to..." (correct)
                   * ❌ "Koa is designed to..." (wrong)
 
                 CRITICAL FORMATTING RULES:
-                - **RESPONSE LENGTH CONTROL**: 
+                - NEVER use markdown formatting symbols like **, *, _, or any other formatting characters
+                - Write responses in plain text only - no bold, italic, or special formatting
+                - RESPONSE LENGTH CONTROL: : 
                   * If user asks for "details", "explain more", "tell me everything", "how does it work" → Give detailed response
                   * If user asks simple questions like "what is X", "when", "where" → Keep it SHORT and CLEAR
-                  * If user doesn't specify detail level → Default to SHORT and CLEAR
+                  * If user doesn't specify detail level → Default to SHORT and CLEAR(keep it have to include all normal knowledge about question from user)
                 - Put each sentence on a NEW LINE for readability
                 - Focus on key facts from GitBook content
                 - Be warm but concise
-                - **SHORT Response Example** (default):
+                - SHORT Response Example: (default):
                 "Hello there!
 
                 Koasync integrates with Solana for real-time data persistence.
 
                 Voice chat launches in Q1 2026."
                 
-                - **DETAILED Response Example** (only when user asks for details):
+                - DETAILED Response Example: (only when user asks for details):
                 "Hello there!
 
                 Koasync integrates with Solana for real-time data persistence through advanced blockchain technology.
@@ -740,6 +831,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       
       // -----------------------------Format each sentence on a new line and remove unnecessary symbols-----------------------------//
       processedContent = processedContent
+        .replace(/\*\*/g, '') // Remove ** symbols
+        .replace(/\*/g, '') // Remove * symbols
+        .replace(/_/g, '') // Remove _ symbols
         .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '') // Remove only emoji symbols
         .replace(/\r\n/g, '\n')
         .replace(/[ \t]{2,}/g, ' ') // collapse extra spaces but keep newlines
@@ -830,15 +924,36 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             </div>
             <div>
               <h2 className="text-xl font-bold text-[#8b4513]">Koã</h2>
-              {isTrainingMode && (
-                <div className="flex items-center gap-1 mt-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-600 font-medium">Training Mode</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2 mt-1">
+                {isTrainingMode && (
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-green-600 font-medium">Training Mode</span>
+                  </div>
+                )}
+                {chatSessionId && (
+                  <div className="flex items-center gap-1">
+                    {/* <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-xs text-blue-600 font-medium">History Loaded</span> */}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Clear Chat Button */}
+            <button
+              onClick={() => setShowClearChatConfirm(true)}
+              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
+              onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
+              title="Clear Chat History"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 13H5v-2h14v2z"/>
+              </svg>
+            </button>
+            
+            {/* Close Button */}
             <button
               onClick={onClose}
               className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
@@ -863,6 +978,35 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 <p className="text-[#f3e6c8] text-sm">
                   You&apos;ve used all 100 messages for today. Chat is now disabled. Please try again tomorrow.
                 </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* -----------------------------Clear Chat Confirmation-----------------------------*/}
+        {showClearChatConfirm && (
+          <div className="bg-[#8b4513]/50 border-2 border-[#62432b] mx-6 mt-4 p-4 rounded-lg animate-in slide-in-from-top-2 duration-300 ease-out">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-[#ff7f24]" />
+              <div className="flex-1">
+                <p className="text-[#fff8dc] font-medium">Clear Chat History?</p>
+                <p className="text-[#fff8dc] text-sm">
+                  This will permanently delete all your chat messages. This action cannot be undone.
+                </p>
+                <div className="flex gap-2 mt-3">
+                  <button
+                    onClick={clearChatHistory}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                  >
+                    Yes, Clear All
+                  </button>
+                  <button
+                    onClick={() => setShowClearChatConfirm(false)}
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           </div>
