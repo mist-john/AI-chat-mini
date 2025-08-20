@@ -899,7 +899,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       {/* -----------------------------Modal Content-----------------------------*/}
       <div 
         ref={modalElementRef}
-        className={`bg-[#f3e6c8] rounded-2xl flex flex-col shadow-2xl border-3 border-[#8b4513] transform will-change-transform ${
+        className={`bg-[#e2b495] rounded-2xl flex flex-col shadow-2xl border-3 border-[#8b4513] transform will-change-transform ${
           isOpen 
             ? 'opacity-100 scale-100 translate-y-0' 
             : 'opacity-0 scale-95 translate-y-4'
@@ -913,7 +913,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         {/* -----------------------------Header - Now Draggable-----------------------------*/}
         <div 
           ref={modalContentRef}
-          className="flex items-center justify-between rounded-t-2xl p-1 bg-gradient-to-b from-[#df7721] to-[#efb686] border-b-2 animate-in slide-in-from-top-2 duration-300 ease-out cursor-move select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
+          className="flex items-center justify-between rounded-t-2xl p-1 bg-gradient-to-b from-[#ba6600] to-[#efb686]  animate-in slide-in-from-top-2 duration-300 ease-out cursor-move select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
           onMouseDown={handleMouseDown}
           style={{ userSelect: 'none' }}
         >
@@ -923,7 +923,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               <img src="/images/koa.png"  width={50} height={50} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#8b4513]">Koã</h2>
+              <h2 className="text-2xl font-extrabold text-[#ffffff]">Koã</h2>
               <div className="flex items-center gap-2 mt-1">
                 {isTrainingMode && (
                   <div className="flex items-center gap-1">
@@ -970,7 +970,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
         {/* -----------------------------Message Limit Warning-----------------------------*/}
         {messageLimitReached && (
-          <div className="bg-[#8b4513]/50 border-2 border-[#62432b] mx-6 mt-4 p-4 rounded-lg animate-in slide-in-from-top-2 duration-300 ease-out">
+          <div className="bg-[#b4732f]/50 border-2 border-[#62432b] mx-6 mt-4 p-4 rounded-lg animate-in slide-in-from-top-2 duration-300 ease-out">
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-[#ff7f24]" />
               <div>
@@ -985,7 +985,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
         {/* -----------------------------Clear Chat Confirmation-----------------------------*/}
         {showClearChatConfirm && (
-          <div className="bg-[#8b4513]/50 border-2 border-[#62432b] mx-6 mt-4 p-4 rounded-lg animate-in slide-in-from-top-2 duration-300 ease-out">
+          <div className="bg-[#b4732f]/50 border-2 border-[#62432b] mx-6 mt-4 p-4 rounded-lg animate-in slide-in-from-top-2 duration-300 ease-out">
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-[#ff7f24]" />
               <div className="flex-1">
@@ -1014,7 +1014,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
               {/* -----------------------------Messages - Also Draggable-----------------------------*/}
         <div 
-          className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#fff8dc] cursor-move"
+          className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f4e7c8] cursor-move"
           onMouseDown={handleMouseDown}
           style={{ userSelect: 'none' }}
         >
@@ -1029,14 +1029,14 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               {message.role === 'assistant' && (
                 <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa.png"  width={80} height={80} />
+                  <img src="/images/koa1.png"  width={80} height={80} />
                 </div>
               )}
               <div
                 className={`max-w-[70%] rounded-2xl px-4 py-3 ${
                   message.role === 'user'
-                    ? 'bg-[#ff7f24] text-[#fff8dc] ml-auto'
-                    : 'bg-gray-300 text-gray-800'
+                    ? 'bg-gray-300 text-gray-1000 ml-auto'
+                    : 'bg-gray-100 text-gray-800'
                 }`}
                 style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
               >
@@ -1054,18 +1054,18 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               {message.role === 'user' && (
                 <div className="w-10 h-10 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png"  width={80} height={80} />
+                  <img src="/images/user.png"  width={60} height={60} />
                 </div>
               )}
             </div>
           ))}
           {isLoading && !messageLimitReached && (
             <div className="flex gap-3 justify-start animate-in slide-in-from-bottom-2 duration-300 ease-out">
-              <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
+              <div className="w-12 h-12  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa.png"  width={80} height={80} />
+                  <img src="/images/koa.png"  width={70} height={70} />
               </div>
-              <div className="bg-gray-300 rounded-2xl px-4 py-3">
+              <div className="bg-gray-100 rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
