@@ -944,24 +944,23 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             {/* Clear Chat Button */}
             <button
               onClick={() => setShowClearChatConfirm(true)}
-              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
+              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-1 mt-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
               onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
               title="Clear Chat History"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 13H5v-2h14v2z"/>
+                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
             </button>
             
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
-              onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking close button
+              onMouseDown={(e) => e.stopPropagation()}
+              className="text-[#8b4513] hover:text-[#62432b] transition-colors px-2  rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-3xl"
+              aria-label="Close"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              ×
             </button>
           </div>
         </div>
@@ -1033,15 +1032,25 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 </div>
               )}
               <div
-                className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                className={`max-w-[70%] rounded-3xl px-5 py-4 relative ${
                   message.role === 'user'
-                    ? 'bg-[#964411] text-[#fff] ml-auto shadow-xl'
-                    : 'bg-gray-100 text-[#371900] drop-shadow-xl'
+                    ? 'bg-gradient-to-br from-[#f9be8f] via-[#f47c1c] to-[#e67e22] text-white ml-auto shadow-2xl shadow-orange-500/30 border border-orange-200/20'
+                    : 'bg-gradient-to-br from-[#f8ad71] via-[#f8d7bc] to-[#f4e7c8] text-[#120800] shadow-2xl shadow-orange-300/30 border border-orange-200/30'
                 }`}
                 style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
               >
+                {/* Chat bubble tail for assistant messages */}
+                {message.role === 'assistant' && (
+                  <div className="absolute left-0 top-1/2 transform -translate-x-2 -translate-y-1/2 w-0 h-0 border-l-0 border-r-8 border-t-8 border-b-8 border-l-transparent border-r-[#f8ad71] border-t-transparent border-b-transparent"></div>
+                )}
+                
+                {/* Chat bubble tail for user messages */}
+                {message.role === 'user' && (
+                  <div className="absolute right-0 top-1/2 transform translate-x-2 -translate-y-1/2 w-0 h-0 border-l-8 border-r-0 border-t-8 border-b-8 border-l-[#f47c1c] border-r-transparent border-t-transparent border-b-transparent"></div>
+                )}
+                
                 <div 
-                  className="text-sm leading-relaxed whitespace-pre-wrap break-words"
+                  className="text-sm leading-relaxed whitespace-pre-wrap break-words font-medium"
                   style={{
                     lineHeight: '1.6',
                     wordSpacing: '0.05em',
@@ -1050,11 +1059,17 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 >
                   {message.content}
                 </div>
+                
+                {/* Message timestamp */}
+                <div className={`text-xs mt-2 opacity-70 ${
+                  message.role === 'user' ? 'text-right' : 'text-left'
+                }`}>
+                  {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
               </div>
               {message.role === 'user' && (
-                <div className="w-10 h-10 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
-                  {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png"  width={60} height={60} />
+                <div className="w-10 h-10 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-orange-200/30">
+                  <img src="/images/user.png" width={60} height={60}  />
                 </div>
               )}
             </div>
@@ -1065,7 +1080,10 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
                   <img src="/images/koa1.png"  width={70} height={70} />
               </div>
-              <div className="bg-gray-100 rounded-2xl px-4 py-3">
+              <div className="bg-gradient-to-br from-[#f8ad71] via-[#f8d7bc] to-[#f4e7c8] rounded-3xl px-5 py-4 shadow-2xl shadow-orange-300/30 border border-orange-200/30 relative">
+                {/* Chat bubble tail for loading message */}
+                <div className="absolute left-0 top-1/2 transform -translate-x-2 -translate-y-1/2 w-0 h-0 border-l-0 border-r-8 border-t-8 border-b-8 border-l-transparent border-r-[#f8ad71] border-t-transparent border-b-transparent"></div>
+                
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>

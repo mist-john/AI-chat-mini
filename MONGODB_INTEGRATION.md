@@ -125,8 +125,8 @@ if (canSend) {
 ### Getting Client Status
 ```typescript
 const status = await Client.getClientStatus('client_123');
-console.log(`Messages today: ${status.messageCount}/${status.dailyLimit}`);
-console.log(`Can send: ${status.canSendMessage}`);
+// console.log(`Messages today: ${status.messageCount}/${status.dailyLimit}`);
+// console.log(`Can send: ${status.canSendMessage}`);
 ```
 
 ## 🛡️ Security Features

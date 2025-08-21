@@ -41,7 +41,7 @@ export async function DELETE(request: NextRequest) {
     const deleted = await TrainingData.delete(id);
     
     if (deleted) {
-      console.log(`[Admin] Deleted training session: ${id}`);
+    //   console.log(`[Admin] Deleted training session: ${id}`);
       return NextResponse.json({
         success: true,
         message: 'Training session deleted successfully'

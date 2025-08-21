@@ -6,15 +6,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q') || 'test';
     
-    console.log(`[Test Search] Testing search for: "${query}"`);
+    // console.log(`[Test Search] Testing search for: "${query}"`);
     
     // Test 1: Get all content
     const allContent = await GitBookContent.getAll();
-    console.log(`[Test Search] Total content in DB: ${allContent.length}`);
+    // console.log(`[Test Search] Total content in DB: ${allContent.length}`);
     
     // Test 2: Search for the query
     const searchResults = await GitBookContent.search(query);
-    console.log(`[Test Search] Search results: ${searchResults.length}`);
+    // console.log(`[Test Search] Search results: ${searchResults.length}`);
     
     // Test 3: Check what's in the database
     const sampleContent = allContent.slice(0, 3).map(item => ({

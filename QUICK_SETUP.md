@@ -32,7 +32,7 @@ mongodb+srv://myusername:mypassword123@cluster0.abc123.mongodb.net/koa-chat?retr
 Create a file called `.env.local` in your project root:
 
 ```bash
-MONGODB_URI=mongodb+srv://yourusername:yourpassword@yourcluster.xxxxx.mongodb.net/koa-chat?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv:/
 NEXT_PUBLIC_OPENAI_API_KEY=sk-your_openai_api_key_here
 AUTO_TRAIN_SECRET=your_random_secret_key_here_32_characters_long
 ```
