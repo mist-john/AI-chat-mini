@@ -1064,7 +1064,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
                   <img src="/images/koa1.png"  width={70} height={70} />
               </div>
-              <div className="bg-gray-100 rounded-2xl px-4 py-3">
+              <div className=" rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
