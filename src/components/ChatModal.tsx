@@ -1014,7 +1014,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
               {/* -----------------------------Messages - Also Draggable-----------------------------*/}
         <div 
-          className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f4e7c8] cursor-move"
+          className="flex-1 overflow-y-scroll flex-1 overflow-y-scroll scrollbar scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-[#f4e7c8] scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-[#f4e7c8]"
           onMouseDown={handleMouseDown}
           style={{ userSelect: 'none' }}
         >
@@ -1027,16 +1027,16 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {message.role === 'assistant' && (
-                <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
+                <div className="w-13 h-13  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa1.png"  width={80} height={80} />
+                  <img src="/images/koa1.png"  width={60} height={60} />
                 </div>
               )}
               <div
                 className={`max-w-[70%] rounded-2xl px-4 py-3 ${
                   message.role === 'user'
-                    ? 'bg-gray-300 text-gray-1000 ml-auto'
-                    : 'bg-gray-100 text-gray-800'
+                    ? 'bg-[#964411] text-[#fff] ml-auto shadow-xl'
+                    : 'bg-gray-100 text-[#371900] drop-shadow-xl'
                 }`}
                 style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
               >
@@ -1063,7 +1063,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <div className="flex gap-3 justify-start animate-in slide-in-from-bottom-2 duration-300 ease-out">
               <div className="w-12 h-12  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa.png"  width={70} height={70} />
+                  <img src="/images/koa1.png"  width={70} height={70} />
               </div>
               <div className="bg-gray-100 rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
