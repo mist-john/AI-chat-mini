@@ -1077,7 +1077,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         </div>
 
                         {/* -----------------------------Input - Completely disabled when limit reached-----------------------------*/}
-        <form onSubmit={handleSubmit} className="p-2  border-t-2 bg-gradient-to-b from-[#af5b3a] to-[#873f23] animate-in slide-in-from-bottom-2 duration-300 ease-out">
+        <form onSubmit={handleSubmit} className="p-2  border-t-2 bg-gradient-to-b from-[#9e3918] to-[#9a2b05] animate-in slide-in-from-bottom-2 duration-300 ease-out">
           {/* Training Mode Indicator */}
           {isTrainingMode && (
             <div className="mb-2 text-center">
@@ -1109,7 +1109,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading || messageLimitReached}
-              className="bg-[#f79f61] hover:bg-[#f79f61]/80 disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+              className="bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
               <svg
