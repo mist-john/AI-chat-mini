@@ -913,17 +913,17 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         {/* -----------------------------Header - Now Draggable-----------------------------*/}
         <div 
           ref={modalContentRef}
-          className="flex items-center justify-between rounded-t-2xl p-1 bg-gradient-to-b from-[#ba6600] to-[#efb686]  animate-in slide-in-from-top-2 duration-300 ease-out cursor-move select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
+          className="flex items-center justify-between rounded-t-2xl p-1 bg-gradient-to-b from-[#ff6740] to-[#fb8b6e]  animate-in slide-in-from-top-2 duration-300 ease-out cursor-move select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
           onMouseDown={handleMouseDown}
           style={{ userSelect: 'none' }}
         >
           <div className="flex items-center gap-3 ml-2">
-            <div className="w-15 h-15 bg-[#572502] rounded-full flex items-center justify-center border-1 border-[#8b4513]">
+            <div className="w-15 h-15 pl-4 py-2 rounded-full flex items-center justify-center border-1 border-[#8b4513]">
               {/* <span className="text-[#8b4513] font-bold text-lg">K</span> */}
-              <img src="/images/koa.png"  width={50} height={50} />
+              <img src="/images/koa2.png"  width={50} height={50} />
             </div>
             <div>
-              <h2 className="text-2xl font-extrabold text-[#ffffff]">Koã</h2>
+              {/* <h2 className="text-2xl font-extrabold text-[#ffffff]">Koã</h2> */}
               <div className="flex items-center gap-2 mt-1">
                 {isTrainingMode && (
                   <div className="flex items-center gap-1">
@@ -1013,7 +1013,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
               {/* -----------------------------Messages - Also Draggable-----------------------------*/}
         <div 
-          className="flex-1 overflow-y-scroll flex-1 overflow-y-scroll scrollbar scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-[#f4e7c8] scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-[#f4e7c8]"
+          className="flex-1 overflow-y-scroll flex-1 overflow-y-scroll scrollbar scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-gradient-to-r from-[#fce3d6] to-[#ffffff] scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-[#f4e7c8]"
           onMouseDown={handleMouseDown}
           style={{ userSelect: 'none' }}
         >
@@ -1032,25 +1032,15 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 </div>
               )}
               <div
-                className={`max-w-[70%] rounded-3xl px-5 py-4 relative ${
+                className={`max-w-[70%] rounded-2xl px-4 py-3 ${
                   message.role === 'user'
-                    ? 'bg-gradient-to-br from-[#f9be8f] via-[#f47c1c] to-[#e67e22] text-white ml-auto shadow-2xl shadow-orange-500/30 border border-orange-200/20'
-                    : 'bg-gradient-to-br from-[#f8ad71] via-[#f8d7bc] to-[#f4e7c8] text-[#120800] shadow-2xl shadow-orange-300/30 border border-orange-200/30'
+                    ? 'bg-[#febd89] text-[#120800] ml-auto shadow-xl'
+                    : 'bg-[#f8d7bc] text-[#120800] shadow-xl'
                 }`}
                 style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
               >
-                {/* Chat bubble tail for assistant messages */}
-                {message.role === 'assistant' && (
-                  <div className="absolute left-0 top-1/2 transform -translate-x-2 -translate-y-1/2 w-0 h-0 border-l-0 border-r-8 border-t-8 border-b-8 border-l-transparent border-r-[#f8ad71] border-t-transparent border-b-transparent"></div>
-                )}
-                
-                {/* Chat bubble tail for user messages */}
-                {message.role === 'user' && (
-                  <div className="absolute right-0 top-1/2 transform translate-x-2 -translate-y-1/2 w-0 h-0 border-l-8 border-r-0 border-t-8 border-b-8 border-l-[#f47c1c] border-r-transparent border-t-transparent border-b-transparent"></div>
-                )}
-                
                 <div 
-                  className="text-sm leading-relaxed whitespace-pre-wrap break-words font-medium"
+                  className="text-sm leading-relaxed whitespace-pre-wrap break-words"
                   style={{
                     lineHeight: '1.6',
                     wordSpacing: '0.05em',
@@ -1059,17 +1049,11 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 >
                   {message.content}
                 </div>
-                
-                {/* Message timestamp */}
-                <div className={`text-xs mt-2 opacity-70 ${
-                  message.role === 'user' ? 'text-right' : 'text-left'
-                }`}>
-                  {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
               </div>
               {message.role === 'user' && (
-                <div className="w-10 h-10 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-orange-200/30">
-                  <img src="/images/user.png" width={60} height={60}  />
+                <div className="w-10 h-10 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
+                  {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
+                  <img src="/images/user.png"  width={60} height={60} />
                 </div>
               )}
             </div>
@@ -1080,10 +1064,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
                   <img src="/images/koa1.png"  width={70} height={70} />
               </div>
-              <div className="bg-gradient-to-br from-[#f8ad71] via-[#f8d7bc] to-[#f4e7c8] rounded-3xl px-5 py-4 shadow-2xl shadow-orange-300/30 border border-orange-200/30 relative">
-                {/* Chat bubble tail for loading message */}
-                <div className="absolute left-0 top-1/2 transform -translate-x-2 -translate-y-1/2 w-0 h-0 border-l-0 border-r-8 border-t-8 border-b-8 border-l-transparent border-r-[#f8ad71] border-t-transparent border-b-transparent"></div>
-                
+              <div className="bg-gray-100 rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -1096,7 +1077,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         </div>
 
                         {/* -----------------------------Input - Completely disabled when limit reached-----------------------------*/}
-        <form onSubmit={handleSubmit} className="p-2  border-t-2 bg-gradient-to-b from-[#b77930] to-[#70350a] animate-in slide-in-from-bottom-2 duration-300 ease-out">
+        <form onSubmit={handleSubmit} className="p-2  border-t-2 bg-gradient-to-b from-[#af5b3a] to-[#873f23] animate-in slide-in-from-bottom-2 duration-300 ease-out">
           {/* Training Mode Indicator */}
           {isTrainingMode && (
             <div className="mb-2 text-center">
@@ -1131,8 +1112,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               className="bg-[#f79f61] hover:bg-[#f79f61]/80 disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
-              <svg className="w-4 h-4 ml-2 inline" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              <svg
+                className="-translate-y-[3px] w-5 h-5 ml-2 inline rotate-[-45deg]"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
               </svg>
             </button>
           </div>
