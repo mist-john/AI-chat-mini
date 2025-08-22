@@ -899,7 +899,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       {/* -----------------------------Modal Content-----------------------------*/}
       <div 
         ref={modalElementRef}
-        className={`bg-[#e2b495] rounded-2xl flex flex-col shadow-2xl border-3 border-[#8b4513] transform will-change-transform ${
+        className={`bg-[#e2b495] rounded-4xl flex flex-col shadow-2xl border-3 border-[#8b4513] transform will-change-transform ${
           isOpen 
             ? 'opacity-100 scale-100 translate-y-0' 
             : 'opacity-0 scale-95 translate-y-4'
@@ -913,7 +913,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         {/* -----------------------------Header - Now Draggable-----------------------------*/}
         <div 
           ref={modalContentRef}
-          className="flex items-center justify-between rounded-t-2xl p-1 bg-gradient-to-b from-[#ff6740] to-[#fb8b6e]  animate-in slide-in-from-top-2 duration-300 ease-out  select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
+          className="flex items-center justify-between rounded-t-4xl p-1 bg-gradient-to-b from-[#ff6740] to-[#fb8b6e]  animate-in slide-in-from-top-2 duration-300 ease-out  select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
           // onMouseDown={handleMouseDown}
           style={{ userSelect: 'none' }}
         >
@@ -1049,7 +1049,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
               >
                 <div 
-                  className="text-2xl leading-relaxed whitespace-pre-wrap break-words"
+                  className="text-4xl leading-relaxed whitespace-pre-wrap break-words"
                   style={{
                     lineHeight: '1.6',
                     wordSpacing: '0.05em',
@@ -1112,7 +1112,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                     ? "Training mode - Type your message for analysis..."
                     : "Type a message..."
               }
-              className="flex-1 font-4xl text-4xl bg-[#f3e6c8] border-2  rounded-3xl px-4 py-2 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
+              className="flex-1 font-4xl text-5xl bg-[#f3e6c8] border-2  rounded-3xl px-4 py-2 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
               disabled={isLoading || messageLimitReached}
             />
             <button
