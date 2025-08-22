@@ -1,7 +1,5 @@
+"use client"
 import ChatModal from "@/components/ChatModal";
-
-// import { useState } from 'react';
-// import YourModalComponent from '../../components/YourModalComponent'; // Adjust the path
 
 export default function ModalStandalone() {
   return (
