@@ -882,7 +882,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ease-in-out ${
+      className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300  ${
         isOpen 
           ? 'opacity-100 pointer-events-auto' 
           : 'opacity-0 pointer-events-none'
@@ -905,16 +905,16 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             : 'opacity-0 scale-95 translate-y-4'
         }`}
         style={{ 
-          width: `${modalSize.width}px`,
-          height: `${modalSize.height}px`,
+          width: `100%`,
+          height: `100%`,
           transform: `translate(${modalPosition.x}px, ${modalPosition.y}px)`
         }}
       >
         {/* -----------------------------Header - Now Draggable-----------------------------*/}
         <div 
           ref={modalContentRef}
-          className="flex items-center justify-between rounded-t-2xl p-1 bg-gradient-to-b from-[#ff6740] to-[#fb8b6e]  animate-in slide-in-from-top-2 duration-300 ease-out cursor-move select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
-          onMouseDown={handleMouseDown}
+          className="flex items-center justify-between rounded-t-2xl p-1 bg-gradient-to-b from-[#ff6740] to-[#fb8b6e]  animate-in slide-in-from-top-2 duration-300 ease-out  select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
+          // onMouseDown={handleMouseDown}
           style={{ userSelect: 'none' }}
         >
           <div className="flex items-center gap-3 ml-2">
@@ -944,8 +944,8 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             {/* Clear Chat Button */}
             <button
               onClick={() => setShowClearChatConfirm(true)}
-              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-1 mt-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
-              onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
+              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2 mt-2 mr-6 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
+              // onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
               title="Clear Chat History"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -962,14 +962,14 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             >
               ×
             </button> */}
-            <button
+            {/* <button
   onClick={() => window.location.href = "https://www.koasync.com/"}
   onMouseDown={(e) => e.stopPropagation()}
   className="text-[#8b4513] hover:text-[#62432b] transition-colors px-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-3xl"
   aria-label="Close"
 >
   ×
-</button>
+</button> */}
 
           </div>
         </div>
@@ -1023,7 +1023,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               {/* -----------------------------Messages - Also Draggable-----------------------------*/}
         <div 
           className="flex-1 overflow-y-scroll flex-1 overflow-y-scroll scrollbar scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-gradient-to-r from-[#fce3d6] to-[#ffffff] scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-[#f4e7c8]"
-          onMouseDown={handleMouseDown}
+          // onMouseDown={handleMouseDown}
           style={{ userSelect: 'none' }}
         >
           {messages.map((message, index) => (
@@ -1135,7 +1135,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         {/* Enhanced Resize Handle */}
         <div 
           className="absolute bottom-0 right-0 w-4 h-4 cursor-nw-resize flex items-center justify-center group"
-          onMouseDown={handleResizeMouseDown}
+          // onMouseDown={handleResizeMouseDown}
           style={{
             background: 'linear-gradient(135deg, transparent 70%,rgb(104, 26, 2) 50%)',
             borderRadius: '0 0 16px 0'
