@@ -5,11 +5,11 @@ export default function ModalStandalone() {
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '20px'
+      padding: '20px',
+      backgroundColor: 'transparent' // or just delete this line
     }}>
       <ChatModal 
         isOpen={true}
