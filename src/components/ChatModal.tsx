@@ -954,14 +954,23 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             </button>
             
             {/* Close Button */}
-            <button
+            {/* <button
               onClick={onClose}
               onMouseDown={(e) => e.stopPropagation()}
               className="text-[#8b4513] hover:text-[#62432b] transition-colors px-2  rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-3xl"
               aria-label="Close"
             >
               ×
-            </button>
+            </button> */}
+            <button
+  onClick={() => window.location.href = "https://www.koasync.com/"}
+  onMouseDown={(e) => e.stopPropagation()}
+  className="text-[#8b4513] hover:text-[#62432b] transition-colors px-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-3xl"
+  aria-label="Close"
+>
+  ×
+</button>
+
           </div>
         </div>
 

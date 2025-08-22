@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Koã AI Chat - Your AI Companion",
   description: "Experience the future of AI companionship with Koã, powered by GPT-4o mini",
+  icons: {
+    icon: "/avatar.png", // 👈 uses koa.png from public/
+  },
 };
 
 export default function RootLayout({
