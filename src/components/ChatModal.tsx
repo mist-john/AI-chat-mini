@@ -918,9 +918,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           style={{ userSelect: 'none' }}
         >
           <div className="flex items-center gap-3 ml-2">
-            <div className="w-15 h-15 pl-4 py-2 rounded-full flex items-center justify-center border-1 border-[#8b4513]">
+            <div className="w-15 h-15 pl-4 py-4 rounded-full flex items-center justify-center border-1 border-[#8b4513]">
               {/* <span className="text-[#8b4513] font-bold text-lg">K</span> */}
-              <img src="/images/koa2.png"  width={50} height={50} />
+              <img src="/images/koa2.png"  width={80} height={80} />
             </div>
             <div>
               {/* <h2 className="text-2xl font-extrabold text-[#ffffff]">Koã</h2> */}
@@ -944,11 +944,11 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             {/* Clear Chat Button */}
             <button
               onClick={() => setShowClearChatConfirm(true)}
-              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2 mt-2 mr-6 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
+              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2 mt-2 mr-20 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
               // onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
               title="Clear Chat History"
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
             </button>
@@ -963,13 +963,13 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               ×
             </button> */}
             {/* <button
-  onClick={() => window.location.href = "https://www.koasync.com/"}
-  onMouseDown={(e) => e.stopPropagation()}
-  className="text-[#8b4513] hover:text-[#62432b] transition-colors px-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-3xl"
-  aria-label="Close"
->
-  ×
-</button> */}
+              onClick={() => window.location.href = "https://www.koasync.com/"}
+              onMouseDown={(e) => e.stopPropagation()}
+              className="text-[#8b4513] hover:text-[#62432b] transition-colors px-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-3xl"
+              aria-label="Close"
+            >
+              ×
+            </button> */}
 
           </div>
         </div>
@@ -983,7 +983,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               <AlertCircle className="w-5 h-5 text-[#ff7f24]" />
               <div>
                 <p className="text-[#fff8dc] font-medium">Message Limit Reached!</p>
-                <p className="text-[#f3e6c8] text-sm">
+                <p className="text-[#f3e6c8] text-xl">
                   You&apos;ve used all 100 messages for today. Chat is now disabled. Please try again tomorrow.
                 </p>
               </div>
@@ -997,20 +997,20 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-[#ff7f24]" />
               <div className="flex-1">
-                <p className="text-[#fff8dc] font-medium">Clear Chat History?</p>
-                <p className="text-[#fff8dc] text-sm">
+                <p className="text-[#fff8dc] text-5xl">Clear Chat History?</p>
+                <p className="text-[#fff8dc] text-3xl">
                   This will permanently delete all your chat messages. This action cannot be undone.
                 </p>
                 <div className="flex gap-2 mt-3">
                   <button
                     onClick={clearChatHistory}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-4xl"
                   >
                     Yes, Clear All
                   </button>
                   <button
                     onClick={() => setShowClearChatConfirm(false)}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-4xl"
                   >
                     Cancel
                   </button>
@@ -1035,9 +1035,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {message.role === 'assistant' && (
-                <div className="w-13 h-13  rounded-full flex items-center justify-center flex-shrink-0 ">
+                <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa1.png"  width={60} height={60} />
+                  <img src="/images/koa1.png"  width={100} height={100} />
                 </div>
               )}
               <div
@@ -1049,7 +1049,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
               >
                 <div 
-                  className="text-sm leading-relaxed whitespace-pre-wrap break-words"
+                  className="text-2xl leading-relaxed whitespace-pre-wrap break-words"
                   style={{
                     lineHeight: '1.6',
                     wordSpacing: '0.05em',
@@ -1060,24 +1060,24 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 </div>
               </div>
               {message.role === 'user' && (
-                <div className="w-10 h-10 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
+                <div className="w-15 h-15 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png"  width={60} height={60} />
+                  <img src="/images/user.png"  width={90} height={90} />
                 </div>
               )}
             </div>
           ))}
           {isLoading && !messageLimitReached && (
             <div className="flex gap-3 justify-start animate-in slide-in-from-bottom-2 duration-300 ease-out">
-              <div className="w-12 h-12  rounded-full flex items-center justify-center flex-shrink-0 ">
+              <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa1.png"  width={70} height={70} />
+                  <img src="/images/koa1.png"  width={100} height={100} />
               </div>
               <div className=" rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce"></div>
+                  <div className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
               </div>
             </div>
@@ -1090,9 +1090,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           {/* Training Mode Indicator */}
           {isTrainingMode && (
             <div className="mb-2 text-center">
-              <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-lg px-3 py-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-700 font-medium">
+              <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-lg px-3 py-1 text-2xl">
+                <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-2xl text-green-700 font-medium">
                   Training Mode Active - All messages are being recorded with AI analysis
                 </span>
               </div>
@@ -1112,17 +1112,17 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                     ? "Training mode - Type your message for analysis..."
                     : "Type a message..."
               }
-              className="flex-1 bg-[#f3e6c8] border-2  rounded-3xl px-4 py-2 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
+              className="flex-1 font-4xl text-4xl bg-[#f3e6c8] border-2  rounded-3xl px-4 py-2 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
               disabled={isLoading || messageLimitReached}
             />
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading || messageLimitReached}
-              className="bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+              className="text-5xl bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
               <svg
-                className="-translate-y-[3px] w-5 h-5 ml-2 inline rotate-[-45deg]"
+                className="-translate-y-[8px] w-10 h-10 ml-2 inline rotate-[-45deg]"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
