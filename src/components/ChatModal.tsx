@@ -1128,11 +1128,11 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           className="absolute bottom-0 right-0 w-4 h-4 cursor-nw-resize flex items-center justify-center group"
           onMouseDown={handleResizeMouseDown}
           style={{
-            background: 'linear-gradient(135deg, transparent 50%,rgb(104, 39, 9) 50%)',
+            background: 'linear-gradient(135deg, transparent 70%,rgb(104, 26, 2) 50%)',
             borderRadius: '0 0 16px 0'
           }}
         >
-          <div className="w-3 h-3 bg-[#8b4513] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <div className="w-3 h-3 bg-[#8b4513] rounded-full opacity-30 group-hover:opacity-100 transition-opacity duration-200" />
         </div>
       </div>
     </div>
