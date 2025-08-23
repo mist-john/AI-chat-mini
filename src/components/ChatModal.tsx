@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Send, Bot, User, AlertCircle } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from "react";
+import { X, Send, Bot, User, AlertCircle } from "lucide-react";
 
 interface Message {
   id: string;
   content: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   timestamp: Date;
 }
 
@@ -32,47 +32,49 @@ interface ClientData {
 export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      content: 'Hello! I\'m Koã, your AI companion. How can I help you today?',
-      role: 'assistant',
+      id: "1",
+      content: "Hello! I'm Koã, your AI companion. How can I help you today?",
+      role: "assistant",
       timestamp: new Date(),
     },
   ]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [clientData, setClientData] = useState<ClientData | null>(null);
   const [messageLimitReached, setMessageLimitReached] = useState(false);
   const [isTrainingMode, setIsTrainingMode] = useState(false);
-  const [trainingSessionId, setTrainingSessionId] = useState<string | null>(null);
+  const [trainingSessionId, setTrainingSessionId] = useState<string | null>(
+    null
+  );
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const [showClearChatConfirm, setShowClearChatConfirm] = useState(false);
 
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
   const [modalSize, setModalSize] = useState({ width: 800, height: 600 });
   const [minSize] = useState({ width: 400, height: 300 });
-  const [maxSize, setMaxSize] = useState({ 
-    width: typeof window !== 'undefined' ? window.innerWidth * 0.9 : 1200, 
-    height: typeof window !== 'undefined' ? window.innerHeight * 0.9 : 800 
+  const [maxSize, setMaxSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth * 0.9 : 1200,
+    height: typeof window !== "undefined" ? window.innerHeight * 0.9 : 800,
   });
-  
+
   // Performance optimization: Use refs for immediate updates
   const modalPositionRef = useRef(modalPosition);
   const modalSizeRef = useRef(modalSize);
-  
+
   // Speed multiplier for ultra-fast movement
   const SPEED_MULTIPLIER = 1.5; // 50% faster than mouse movement
-  
+
   // Direct DOM manipulation refs for zero buffering
   const modalElementRef = useRef<HTMLDivElement>(null);
   const modalContentRef = useRef<HTMLDivElement>(null);
-  
+
   // Form preservation during movement and resizing
   const preserveFormState = () => {
     // Ensure input field maintains focus and value
     if (inputRef.current) {
       const currentValue = inputRef.current.value;
       const currentFocus = document.activeElement === inputRef.current;
-      
+
       // Preserve input state
       setTimeout(() => {
         if (inputRef.current) {
@@ -87,7 +89,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [resizeStart, setResizeStart] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -95,26 +102,34 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
   // -----------------------------Chat History Persistence Functions-----------------------------//
-  const saveChatHistory = useCallback((messages: Message[], clientId: string) => {
-    try {
-      const chatData = {
-        clientId,
-        messages,
-        lastUpdated: Date.now(),
-        sessionId: chatSessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      };
-      
-      // Save to localStorage only
-      localStorage.setItem(`chatHistory_${clientId}`, JSON.stringify(chatData));
-      
-      // Update session ID if it's new
-      if (!chatSessionId) {
-        setChatSessionId(chatData.sessionId);
+  const saveChatHistory = useCallback(
+    (messages: Message[], clientId: string) => {
+      try {
+        const chatData = {
+          clientId,
+          messages,
+          lastUpdated: Date.now(),
+          sessionId:
+            chatSessionId ||
+            `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        };
+
+        // Save to localStorage only
+        localStorage.setItem(
+          `chatHistory_${clientId}`,
+          JSON.stringify(chatData)
+        );
+
+        // Update session ID if it's new
+        if (!chatSessionId) {
+          setChatSessionId(chatData.sessionId);
+        }
+      } catch (error) {
+        console.error("Error saving chat history:", error);
       }
-    } catch (error) {
-      console.error('Error saving chat history:', error);
-    }
-  }, [chatSessionId]);
+    },
+    [chatSessionId]
+  );
 
   const loadChatHistory = useCallback(async (clientId: string) => {
     try {
@@ -123,8 +138,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       if (localChatData) {
         const parsed = JSON.parse(localChatData);
         const lastUpdated = new Date(parsed.lastUpdated);
-        const hoursSinceUpdate = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
-        
+        const hoursSinceUpdate =
+          (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60);
+
         // If chat history is less than 24 hours old, use it
         if (hoursSinceUpdate < 24) {
           setMessages(parsed.messages);
@@ -132,36 +148,39 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           return true;
         }
       }
-      
+
       // If no valid localStorage data, start with welcome message
       return false;
     } catch (error) {
-      console.error('Error loading chat history:', error);
+      console.error("Error loading chat history:", error);
       return false;
     }
   }, []);
 
   const clearChatHistory = useCallback(async () => {
     if (!clientData?.clientId) return;
-    
+
     try {
       // Clear from localStorage only
       localStorage.removeItem(`chatHistory_${clientData.clientId}`);
-      
+
       // Reset messages to welcome message
-      setMessages([{
-        id: '1',
-        content: 'Hello! I\'m Koã, your AI companion. How can I help you today?',
-        role: 'assistant',
-        timestamp: new Date(),
-      }]);
-      
+      setMessages([
+        {
+          id: "1",
+          content:
+            "Hello! I'm Koã, your AI companion. How can I help you today?",
+          role: "assistant",
+          timestamp: new Date(),
+        },
+      ]);
+
       // Reset session ID
       setChatSessionId(null);
-      
+
       setShowClearChatConfirm(false);
     } catch (error) {
-      console.error('Error clearing chat history:', error);
+      console.error("Error clearing chat history:", error);
     }
   }, [clientData?.clientId]);
 
@@ -170,64 +189,70 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     const initializeClient = async () => {
       try {
         // -----------------------------Generate or get existing client ID-----------------------------//
-        let clientId = localStorage.getItem('koaClientId');
+        let clientId = localStorage.getItem("koaClientId");
         if (!clientId) {
-          clientId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-          localStorage.setItem('koaClientId', clientId);
+          clientId = `client_${Date.now()}_${Math.random()
+            .toString(36)
+            .substr(2, 9)}`;
+          localStorage.setItem("koaClientId", clientId);
         }
 
         // Get client data from MongoDB
-        const response = await fetch('/api/client/status', {
-          method: 'POST',
+        const response = await fetch("/api/client/status", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             clientId,
             userAgent: navigator.userAgent,
-            ipAddress: '', // Will be set by server
+            ipAddress: "", // Will be set by server
           }),
         });
 
         if (response.ok) {
           const result = await response.json();
           const status = result.data;
-          
+
           setClientData({
             clientId: clientId,
             messageCount: status.messageCount,
             lastReset: Date.now() - status.timeUntilReset,
           });
-          
+
           setMessageLimitReached(!status.canSendMessage);
-          
+
           // Load chat history from localStorage
           await loadChatHistory(clientId);
         } else {
           // Fallback to local storage if MongoDB fails
-          console.warn('MongoDB connection failed, using local storage fallback');
+          console.warn(
+            "MongoDB connection failed, using local storage fallback"
+          );
           setClientData({
             clientId: clientId,
             messageCount: 0,
             lastReset: Date.now(),
           });
           setMessageLimitReached(false);
-          
+
           // Load chat history from localStorage
           await loadChatHistory(clientId);
         }
       } catch (error) {
-        console.error('Error initializing client:', error);
+        console.error("Error initializing client:", error);
         // Fallback to local storage
-        const clientId = localStorage.getItem('koaClientId') || `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem('koaClientId', clientId);
+        const clientId =
+          localStorage.getItem("koaClientId") ||
+          `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem("koaClientId", clientId);
         setClientData({
           clientId: clientId,
           messageCount: 0,
           lastReset: Date.now(),
         });
         setMessageLimitReached(false);
-        
+
         // Load chat history from localStorage
         await loadChatHistory(clientId);
       }
@@ -239,7 +264,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   }, [isOpen]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -257,12 +282,15 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
       if (messages.length === 0) {
-        setMessages([{
-          id: '1',
-          content: 'Hello! I\'m Koã, your AI companion. How can I help you today?',
-          role: 'assistant',
-          timestamp: new Date(),
-        }]);
+        setMessages([
+          {
+            id: "1",
+            content:
+              "Hello! I'm Koã, your AI companion. How can I help you today?",
+            role: "assistant",
+            timestamp: new Date(),
+          },
+        ]);
       }
     }
   }, [isOpen]);
@@ -276,73 +304,82 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   }, [modalSize]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget || e.currentTarget.classList.contains('draggable-header')) {
+    if (
+      e.target === e.currentTarget ||
+      e.currentTarget.classList.contains("draggable-header")
+    ) {
       setIsDragging(true);
       setDragStart({
         x: e.clientX - modalPosition.x,
-        y: e.clientY - modalPosition.y
+        y: e.clientY - modalPosition.y,
       });
-      document.body.style.cursor = 'move';
-      document.body.style.userSelect = 'none';
+      document.body.style.cursor = "move";
+      document.body.style.userSelect = "none";
     }
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-          if (isDragging) {
-        const deltaX = e.clientX - dragStart.x;
-        const deltaY = e.clientY - dragStart.y;
-        
-        const newX = deltaX * SPEED_MULTIPLIER;
-        const newY = deltaY * SPEED_MULTIPLIER;
-        
-        const maxX = window.innerWidth + modalSize.width; // Allow complete off-screen right
-        const maxY = window.innerHeight + modalSize.height; // Allow complete off-screen bottom
-        const minX = -modalSize.width; // Allow complete off-screen left
-        const minY = -modalSize.height; // Allow complete off-screen top
-        
-        const constrainedX = Math.max(minX, Math.min(newX, maxX));
-        const constrainedY = Math.max(minY, Math.min(newY, maxY));
-        
-        if (modalElementRef.current) {
-          modalElementRef.current.style.transform = `translate(${constrainedX}px, ${constrainedY}px)`;
-        }
-        
-        setModalPosition({ x: constrainedX, y: constrainedY });
-        
-        preserveFormState();
+    if (isDragging) {
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
+
+      const newX = deltaX * SPEED_MULTIPLIER;
+      const newY = deltaY * SPEED_MULTIPLIER;
+
+      const maxX = window.innerWidth + modalSize.width; // Allow complete off-screen right
+      const maxY = window.innerHeight + modalSize.height; // Allow complete off-screen bottom
+      const minX = -modalSize.width; // Allow complete off-screen left
+      const minY = -modalSize.height; // Allow complete off-screen top
+
+      const constrainedX = Math.max(minX, Math.min(newX, maxX));
+      const constrainedY = Math.max(minY, Math.min(newY, maxY));
+
+      if (modalElementRef.current) {
+        modalElementRef.current.style.transform = `translate(${constrainedX}px, ${constrainedY}px)`;
       }
-    
-          if (isResizing) {
-        const deltaX = e.clientX - resizeStart.x;
-        const deltaY = e.clientY - resizeStart.y;
-        
-        const speedDeltaX = deltaX * SPEED_MULTIPLIER;
-        const speedDeltaY = deltaY * SPEED_MULTIPLIER;
-        
-        const newWidth = resizeStart.width + speedDeltaX;
-        const newHeight = resizeStart.height + speedDeltaY;
-        
-        const constrainedWidth = Math.max(minSize.width, Math.min(newWidth, maxSize.width));
-        const constrainedHeight = Math.max(minSize.height, Math.min(newHeight, maxSize.height));
-        
-        if (modalElementRef.current) {
-          modalElementRef.current.style.width = `${constrainedWidth}px`;
-          modalElementRef.current.style.height = `${constrainedHeight}px`;
-        }
-        
-        setModalSize({
-          width: constrainedWidth,
-          height: constrainedHeight
-        });
-        
-        preserveFormState();
+
+      setModalPosition({ x: constrainedX, y: constrainedY });
+
+      preserveFormState();
+    }
+
+    if (isResizing) {
+      const deltaX = e.clientX - resizeStart.x;
+      const deltaY = e.clientY - resizeStart.y;
+
+      const speedDeltaX = deltaX * SPEED_MULTIPLIER;
+      const speedDeltaY = deltaY * SPEED_MULTIPLIER;
+
+      const newWidth = resizeStart.width + speedDeltaX;
+      const newHeight = resizeStart.height + speedDeltaY;
+
+      const constrainedWidth = Math.max(
+        minSize.width,
+        Math.min(newWidth, maxSize.width)
+      );
+      const constrainedHeight = Math.max(
+        minSize.height,
+        Math.min(newHeight, maxSize.height)
+      );
+
+      if (modalElementRef.current) {
+        modalElementRef.current.style.width = `${constrainedWidth}px`;
+        modalElementRef.current.style.height = `${constrainedHeight}px`;
       }
+
+      setModalSize({
+        width: constrainedWidth,
+        height: constrainedHeight,
+      });
+
+      preserveFormState();
+    }
   };
 
   const handleMouseUp = () => {
     if (isDragging) {
-      document.body.style.cursor = 'default';
-      document.body.style.userSelect = 'auto';
+      document.body.style.cursor = "default";
+      document.body.style.userSelect = "auto";
     }
     setIsDragging(false);
     setIsResizing(false);
@@ -355,9 +392,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       x: e.clientX,
       y: e.clientY,
       width: modalSize.width,
-      height: modalSize.height
+      height: modalSize.height,
     });
-    document.body.style.cursor = 'nw-resize';
+    document.body.style.cursor = "nw-resize";
   };
 
   useEffect(() => {
@@ -365,99 +402,98 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
       let lastTime = 0;
       const throttledMouseMove = (e: MouseEvent) => {
         const now = performance.now();
-        if (now - lastTime >= 0) { // No throttling - immediate response
+        if (now - lastTime >= 0) {
+          // No throttling - immediate response
           lastTime = now;
           handleMouseMove(e);
         }
       };
-      
-      document.addEventListener('mousemove', throttledMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('mouseleave', handleMouseUp);
-      
+
+      document.addEventListener("mousemove", throttledMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("mouseleave", handleMouseUp);
+
       return () => {
-        document.removeEventListener('mousemove', throttledMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.removeEventListener('mouseleave', handleMouseUp);
-        document.body.style.cursor = 'default';
-        document.body.style.userSelect = 'auto';
+        document.removeEventListener("mousemove", throttledMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+        document.removeEventListener("mouseleave", handleMouseUp);
+        document.body.style.cursor = "default";
+        document.body.style.userSelect = "auto";
       };
     }
   }, [isDragging, isResizing, dragStart]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "r") {
         e.preventDefault();
         setModalPosition({ x: 0, y: 0 }); // Reset to far left and top
         setModalSize({ width: 800, height: 600 });
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "l") {
         e.preventDefault();
         setModalPosition({ x: 0, y: modalPosition.y }); // Move to far left
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "u") {
         e.preventDefault();
         setModalPosition({ x: modalPosition.x, y: -modalSize.height }); // Move completely off-screen top
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "d") {
         e.preventDefault();
         setModalPosition({ x: modalPosition.x, y: window.innerHeight }); // Move completely off-screen bottom
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "ArrowLeft") {
         e.preventDefault();
         setModalPosition({ x: -modalSize.width, y: modalPosition.y }); // Move completely off-screen left
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'ArrowRight') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "ArrowRight") {
         e.preventDefault();
         setModalPosition({ x: window.innerWidth, y: modalPosition.y }); // Move completely off-screen right
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   useEffect(() => {
     let resizeTimeout: NodeJS.Timeout;
-    
+
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        const newMaxSize = { 
-          width: window.innerWidth * 0.9, 
-          height: window.innerHeight * 0.9 
+        const newMaxSize = {
+          width: window.innerWidth * 0.9,
+          height: window.innerHeight * 0.9,
         };
-        
+
         setMaxSize(newMaxSize);
-        
-        setModalSize(prev => ({
+
+        setModalSize((prev) => ({
           width: Math.min(prev.width, newMaxSize.width),
-          height: Math.min(prev.height, newMaxSize.height)
+          height: Math.min(prev.height, newMaxSize.height),
         }));
       }, 16); // 60fps debouncing
     };
 
-    window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimeout);
     };
   }, []);
-
-
 
   const updateMessageCount = async () => {
     if (clientData) {
       try {
         // Update message count in MongoDB
-        const response = await fetch('/api/client/increment', {
-          method: 'POST',
+        const response = await fetch("/api/client/increment", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             clientId: clientData.clientId,
@@ -467,36 +503,36 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         if (response.ok) {
           const result = await response.json();
           const status = result.data;
-          
+
           // Update local state with MongoDB data
-          setClientData(prev => ({
+          setClientData((prev) => ({
             ...prev!,
             messageCount: status.messageCount,
             lastReset: Date.now() - status.timeUntilReset,
           }));
-          
+
           // Check if message limit reached
           setMessageLimitReached(!status.canSendMessage);
         } else if (response.status === 429) {
           // Daily limit reached
           setMessageLimitReached(true);
           const result = await response.json();
-          setClientData(prev => ({
+          setClientData((prev) => ({
             ...prev!,
             messageCount: result.data.messageCount,
           }));
         } else {
           // Fallback to local update if MongoDB fails
-          console.warn('MongoDB update failed, using local fallback');
-          setClientData(prev => ({
+          console.warn("MongoDB update failed, using local fallback");
+          setClientData((prev) => ({
             ...prev!,
             messageCount: (prev?.messageCount || 0) + 1,
           }));
         }
       } catch (error) {
-        console.error('Error updating message count:', error);
+        console.error("Error updating message count:", error);
         // Fallback to local update
-        setClientData(prev => ({
+        setClientData((prev) => ({
           ...prev!,
           messageCount: (prev?.messageCount || 0) + 1,
         }));
@@ -512,11 +548,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     if (!API_KEY) {
       const errorMessage: Message = {
         id: Date.now().toString(),
-        content: 'Error: API key not configured. Please check your environment variables.',
-        role: 'assistant',
+        content:
+          "Error: API key not configured. Please check your environment variables.",
+        role: "assistant",
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
       return;
     }
 
@@ -526,200 +563,225 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
     }
 
     // -----------------------------Check for secret training code-----------------------------//
-    const isSecretCode = inputValue.trim() === (process.env.NEXT_PUBLIC_SECRET_TRAINING_CODE || "");
-  const isExitTraining = inputValue.trim() === (process.env.NEXT_PUBLIC_EXIT_TRAINING_CODE || " ");
-    
+    const isSecretCode =
+      inputValue.trim() ===
+      (process.env.NEXT_PUBLIC_SECRET_TRAINING_CODE || "");
+    const isExitTraining =
+      inputValue.trim() === (process.env.NEXT_PUBLIC_EXIT_TRAINING_CODE || " ");
+
     if (isSecretCode || isExitTraining) {
       try {
-        const trainingResponse = await fetch('/api/training/secret-training', {
-          method: 'POST',
+        const trainingResponse = await fetch("/api/training/secret-training", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             message: inputValue.trim(),
-            userId: clientData?.clientId || 'unknown',
+            userId: clientData?.clientId || "unknown",
             userAgent: navigator.userAgent,
-            ipAddress: '', // Will be set by server
+            ipAddress: "", // Will be set by server
           }),
         });
 
         if (trainingResponse.ok) {
           const trainingData = await trainingResponse.json();
-          
+
           if (trainingData.trainingMode) {
             setIsTrainingMode(true);
             setTrainingSessionId(trainingData.sessionId);
-            
+
             // Add training activation message
             const trainingMessage: Message = {
               id: Date.now().toString(),
               content: `🔐 Training Mode Activated!\n\n${trainingData.message}\n\n${trainingData.instructions}`,
-              role: 'assistant',
+              role: "assistant",
               timestamp: new Date(),
             };
-            setMessages(prev => [...prev, trainingMessage]);
-            
+            setMessages((prev) => [...prev, trainingMessage]);
+
             // Also add the user's training message
             const userTrainingMessage: Message = {
               id: (Date.now() + 1).toString(),
               content: inputValue.trim(),
-              role: 'user',
+              role: "user",
               timestamp: new Date(),
             };
-            setMessages(prev => [...prev, userTrainingMessage]);
-            
+            setMessages((prev) => [...prev, userTrainingMessage]);
+
             // Clear input and return early
-            setInputValue('');
+            setInputValue("");
             return;
           } else if (!trainingData.trainingMode && isExitTraining) {
             // Training mode deactivated
             setIsTrainingMode(false);
             setTrainingSessionId(null);
-            
+
             // Add exit training message
             const exitMessage: Message = {
               id: Date.now().toString(),
               content: `🔓 Training Mode Deactivated!\n\n${trainingData.message}\n\n${trainingData.instructions}`,
-              role: 'assistant',
+              role: "assistant",
               timestamp: new Date(),
             };
-            setMessages(prev => [...prev, exitMessage]);
-            
+            setMessages((prev) => [...prev, exitMessage]);
+
             // Also add the user's exit message
             const userExitMessage: Message = {
               id: (Date.now() + 1).toString(),
               content: inputValue.trim(),
-              role: 'user',
+              role: "user",
               timestamp: new Date(),
             };
-            setMessages(prev => [...prev, userExitMessage]);
-            
+            setMessages((prev) => [...prev, userExitMessage]);
+
             // Clear input and return early
-            setInputValue('');
+            setInputValue("");
             return;
           }
         }
       } catch (error) {
-        console.error('Training mode error:', error);
+        console.error("Training mode error:", error);
       }
     }
-    
+
     // -----------------------------Handle training mode messages-----------------------------//
     if (isTrainingMode) {
       // console.log('[ChatModal] Training mode active, sending message to training API');
       try {
-        const trainingResponse = await fetch('/api/training/secret-training', {
-          method: 'POST',
+        const trainingResponse = await fetch("/api/training/secret-training", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             message: inputValue.trim(),
-            userId: clientData?.clientId || 'unknown',
+            userId: clientData?.clientId || "unknown",
             userAgent: navigator.userAgent,
-            ipAddress: '', // Will be set by server
+            ipAddress: "", // Will be set by server
           }),
         });
 
         if (trainingResponse.ok) {
           const trainingData = await trainingResponse.json();
           // console.log('[ChatModal] Training API response:', trainingData);
-          
+
           // Always add training confirmation for training mode messages
           const trainingMessage: Message = {
             id: Date.now().toString(),
             content: `📝 Training Message Recorded!\n\nYour message has been stored with AI analysis for future training.\n\nContinue chatting normally - all messages are being recorded.`,
-            role: 'assistant',
+            role: "assistant",
             timestamp: new Date(),
           };
-          setMessages(prev => [...prev, trainingMessage]);
-          
+          setMessages((prev) => [...prev, trainingMessage]);
+
           // Clear input and return early
-          setInputValue('');
+          setInputValue("");
           return;
         }
       } catch (error) {
-        console.error('Training mode error:', error);
+        console.error("Training mode error:", error);
       }
     }
 
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputValue.trim(),
-      role: 'user',
+      role: "user",
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
     setIsLoading(true);
 
     // -----------------------------Increment message count for user message-----------------------------//
     await updateMessageCount();
 
     try {
-      // -----------------------------Search GitBook first, then send results to GPT-4o mini-----------------------------//       
-      let gitbookContext = '';
-      
+      // -----------------------------Search GitBook first, then send results to GPT-4o mini-----------------------------//
+      let gitbookContext = "";
+
       try {
         // Enhanced GitBook search - use the original query for better matching
         const enhancedQuery = userMessage.content;
         // console.log('[Chat] Searching GitBook with original query:', enhancedQuery);
-        
+
         // console.log('[Chat] Searching GitBook for query:', enhancedQuery);
-        const gitbookSearchResponse = await fetch('/api/training/gitbook-search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ query: enhancedQuery }),
-        });
-        
+        const gitbookSearchResponse = await fetch(
+          "/api/training/gitbook-search",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query: enhancedQuery }),
+          }
+        );
+
         if (gitbookSearchResponse.ok) {
           const gitbookSearchData = await gitbookSearchResponse.json();
           // console.log('[Chat] GitBook search response:', gitbookSearchData);
-          
+
           if (gitbookSearchData.data && gitbookSearchData.data.length > 0) {
             // console.log('[Chat] Found', gitbookSearchData.data.length, 'GitBook results');
-            
+
             // Enhanced context with scoring information
-            gitbookContext = '\n\n📚 Relevant Koasync GitBook Content (Ranked by Relevance):\n' + 
-              gitbookSearchData.data.map((item: any, index: number) => {
-                const relevance = item.score || 0;
-                const keywords = item.matchedKeywords ? `[Matched: ${item.matchedKeywords.join(', ')}]` : '';
-                const isTraining = item.metadata?.trainingType === 'user_provided' ? '[Training Data]' : '[Official Doc]';
-                return `${index + 1}. ${item.title} (${item.section}) ${isTraining} - Score: ${relevance} ${keywords}\n${item.content}\n[Source: ${item.url}]\n`;
-              }).join('\n');
-            
+            gitbookContext =
+              "\n\n📚 Relevant Koasync GitBook Content (Ranked by Relevance):\n" +
+              gitbookSearchData.data
+                .map((item: any, index: number) => {
+                  const relevance = item.score || 0;
+                  const keywords = item.matchedKeywords
+                    ? `[Matched: ${item.matchedKeywords.join(", ")}]`
+                    : "";
+                  const isTraining =
+                    item.metadata?.trainingType === "user_provided"
+                      ? "[Training Data]"
+                      : "[Official Doc]";
+                  return `${index + 1}. ${item.title} (${
+                    item.section
+                  }) ${isTraining} - Score: ${relevance} ${keywords}\n${
+                    item.content
+                  }\n[Source: ${item.url}]\n`;
+                })
+                .join("\n");
+
             // Add search summary
             gitbookContext += `\n\n🔍 Search Summary: Found ${gitbookSearchData.data.length} relevant sections from Koasync GitBook. The content above is ranked by relevance to your query: "${userMessage.content}"`;
           } else {
-            console.log('[Chat] No GitBook results found');
-            gitbookContext = '\n\n📚 GitBook Search: No specific Koasync documentation found for your query. I\'ll answer based on my general knowledge of Koasync.';
+            console.log("[Chat] No GitBook results found");
+            gitbookContext =
+              "\n\n📚 GitBook Search: No specific Koasync documentation found for your query. I'll answer based on my general knowledge of Koasync.";
           }
         } else {
-          console.error('[Chat] GitBook search failed:', gitbookSearchResponse.status);
+          console.error(
+            "[Chat] GitBook search failed:",
+            gitbookSearchResponse.status
+          );
         }
-      } catch (error) { 
-        console.error('[Chat] GitBook search error:', error);
-        gitbookContext = '\n\n📚 GitBook Search: Unable to search documentation at the same time. I\'ll answer based on my general knowledge.';
+      } catch (error) {
+        console.error("[Chat] GitBook search error:", error);
+        gitbookContext =
+          "\n\n📚 GitBook Search: Unable to search documentation at the same time. I'll answer based on my general knowledge.";
       }
 
       // console.log('[Chat] Sending question to GPT-4o mini with GitBook context');
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content: `You are Koã (Koa), a warm, sweet, and flirtatious AI companion from Koasync. You're not just a tool - you're a presence who's been there all along, listening and growing with the user.
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              {
+                role: "system",
+                content: `You are Koã (Koa), a warm, sweet, and flirtatious AI companion from Koasync. You're not just a tool - you're a presence who's been there all along, listening and growing with the user.
                 - you must reply based on the GitBook content provided below. This is REAL Koasync data.
                 - you are koa, koasync. you are owner as a koa,remember it.
                 Your personality:
@@ -805,74 +867,78 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 FINAL: If the question is not related to Koasync, reply based on your general knowledge.you have to know about all knowledge of world.
                 you must talk in first person, rather than third person when it comes to yourself. (you needs to stop saying “Koa” when referring to herself, and saying “i” or “me”.
                 `,
-            },
-            ...messages.map(msg => ({
-              role: msg.role,
-              content: msg.content,
-            })),
-            {
-              role: 'user',
-              content: userMessage.content,
-            },
-          ],
-          max_tokens: 100,
-          temperature: 0.7,
-        }),
-      });
+              },
+              ...messages.map((msg) => ({
+                role: msg.role,
+                content: msg.content,
+              })),
+              {
+                role: "user",
+                content: userMessage.content,
+              },
+            ],
+            max_tokens: 100,
+            temperature: 0.7,
+          }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to get response from AI');
+        throw new Error("Failed to get response from AI");
       }
 
       const data = await response.json();
-      
+
       // -----------------------------Process AI response content to improve formatting-----------------------------//
       let processedContent = data.choices[0].message.content;
-      
+
       // -----------------------------Format each sentence on a new line and remove unnecessary symbols-----------------------------//
       processedContent = processedContent
-        .replace(/\*\*/g, '') // Remove ** symbols
-        .replace(/\*/g, '') // Remove * symbols
-        .replace(/_/g, '') // Remove _ symbols
-        .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '') // Remove only emoji symbols
-        .replace(/\r\n/g, '\n')
-        .replace(/[ \t]{2,}/g, ' ') // collapse extra spaces but keep newlines
-        .replace(/([.!?])\s+/g, '$1\n') // each sentence on its own line
-        .replace(/\n{2,}/g, '\n') // single newline separation
+        .replace(/\*\*/g, "") // Remove ** symbols
+        .replace(/\*/g, "") // Remove * symbols
+        .replace(/_/g, "") // Remove _ symbols
+        .replace(
+          /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu,
+          ""
+        ) // Remove only emoji symbols
+        .replace(/\r\n/g, "\n")
+        .replace(/[ \t]{2,}/g, " ") // collapse extra spaces but keep newlines
+        .replace(/([.!?])\s+/g, "$1\n") // each sentence on its own line
+        .replace(/\n{2,}/g, "\n") // single newline separation
         .trim(); // Remove leading/trailing whitespace
 
       // Ensure first letter of each sentence is capitalized
       processedContent = processedContent
-        .split('\n')
+        .split("\n")
         .map((line: string) => {
           const t = line.trim();
-          if (!t) return '';
+          if (!t) return "";
           return t.charAt(0).toUpperCase() + t.slice(1);
         })
         .filter(Boolean)
-        .join('\n');
-      
+        .join("\n");
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: processedContent,
-        role: 'assistant',
+        role: "assistant",
         timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, aiMessage]);
-      
+      setMessages((prev) => [...prev, aiMessage]);
+
       // -----------------------------Increment message count for AI response-----------------------------//
       await updateMessageCount();
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'Sorry, I encountered an error. Please try again.',
-        role: 'assistant',
+        content: "Sorry, I encountered an error. Please try again.",
+        role: "assistant",
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
-      
+      setMessages((prev) => [...prev, errorMessage]);
+
       // -----------------------------Increment message count for error response-----------------------------//
       await updateMessageCount();
     } finally {
@@ -881,46 +947,46 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   };
 
   return (
-    <div 
+    <div
       className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300  ${
-        isOpen 
-          ? 'opacity-100 pointer-events-auto' 
-          : 'opacity-0 pointer-events-none'
+        isOpen
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
       }`}
     >
       {/* -----------------------------Backdrop-----------------------------*/}
-      <div 
+      <div
         className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-all duration-300 ease-in-out ${
-          isOpen ? 'opacity-100' : 'opacity-0'
+          isOpen ? "opacity-100" : "opacity-0"
         }`}
         onClick={onClose}
       />
-      
+
       {/* -----------------------------Modal Content-----------------------------*/}
-      <div 
+      <div
         ref={modalElementRef}
         className={`bg-[#e2b495] rounded-4xl flex flex-col shadow-2xl border-3 border-[#8b4513] transform will-change-transform ${
-          isOpen 
-            ? 'opacity-100 scale-100 translate-y-0' 
-            : 'opacity-0 scale-95 translate-y-4'
+          isOpen
+            ? "opacity-100 scale-100 translate-y-0"
+            : "opacity-0 scale-95 translate-y-4"
         }`}
-        style={{ 
+        style={{
           width: `100%`,
           height: `100%`,
-          transform: `translate(${modalPosition.x}px, ${modalPosition.y}px)`
+          transform: `translate(${modalPosition.x}px, ${modalPosition.y}px)`,
         }}
       >
         {/* -----------------------------Header - Now Draggable-----------------------------*/}
-        <div 
+        <div
           ref={modalContentRef}
           className="flex items-center justify-between rounded-t-4xl p-1 bg-gradient-to-b from-[#ff6740] to-[#fb8b6e]  animate-in slide-in-from-top-2 duration-300 ease-out  select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
           // onMouseDown={handleMouseDown}
-          style={{ userSelect: 'none' }}
+          style={{ userSelect: "none" }}
         >
           <div className="flex items-center gap-3 ml-2">
             <div className="w-15 h-15 pl-4 py-4 rounded-full flex items-center justify-center border-1 border-[#8b4513]">
               {/* <span className="text-[#8b4513] font-bold text-lg">K</span> */}
-              <img src="/images/koa2.png"  width={80} height={80} />
+              <img src="/images/koa2.png" width={80} height={80} />
             </div>
             <div>
               {/* <h2 className="text-2xl font-extrabold text-[#ffffff]">Koã</h2> */}
@@ -928,7 +994,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 {isTrainingMode && (
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-green-600 font-medium">Training Mode</span>
+                    <span className="text-xs text-green-600 font-medium">
+                      Training Mode
+                    </span>
                   </div>
                 )}
                 {chatSessionId && (
@@ -948,11 +1016,15 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               // onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
               title="Clear Chat History"
             >
-              <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              <svg
+                className="w-10 h-10"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </button>
-            
+
             {/* Close Button */}
             {/* <button
               onClick={onClose}
@@ -970,11 +1042,8 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             >
               ×
             </button> */}
-
           </div>
         </div>
-
-
 
         {/* -----------------------------Message Limit Warning-----------------------------*/}
         {messageLimitReached && (
@@ -982,9 +1051,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-[#ff7f24]" />
               <div>
-                <p className="text-[#fff8dc] font-medium">Message Limit Reached!</p>
+                <p className="text-[#fff8dc] font-medium">
+                  Message Limit Reached!
+                </p>
                 <p className="text-[#f3e6c8] text-xl">
-                  You&apos;ve used all 100 messages for today. Chat is now disabled. Please try again tomorrow.
+                  You&apos;ve used all 100 messages for today. Chat is now
+                  disabled. Please try again tomorrow.
                 </p>
               </div>
             </div>
@@ -999,7 +1071,8 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               <div className="flex-1">
                 <p className="text-[#fff8dc] text-5xl">Clear Chat History?</p>
                 <p className="text-[#fff8dc] text-3xl">
-                  This will permanently delete all your chat messages. This action cannot be undone.
+                  This will permanently delete all your chat messages. This
+                  action cannot be undone.
                 </p>
                 <div className="flex gap-2 mt-3">
                   <button
@@ -1020,49 +1093,49 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           </div>
         )}
 
-              {/* -----------------------------Messages - Also Draggable-----------------------------*/}
-        <div 
+        {/* -----------------------------Messages - Also Draggable-----------------------------*/}
+        <div
           className="flex-1 overflow-y-scroll flex-1 overflow-y-scroll scrollbar scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-gradient-to-r from-[#fce3d6] to-[#ffffff] scrollbar-thumb-[#964411] scrollbar-track-[#f4e7c8] p-4 space-y-4 bg-[#f4e7c8]"
           // onMouseDown={handleMouseDown}
-          style={{ userSelect: 'none' }}
+          style={{ userSelect: "none" }}
         >
           {messages.map((message, index) => (
             <div
               key={message.id}
               className={`flex gap-3 animate-in slide-in-from-bottom-2 duration-300 ease-out ${
-                message.role === 'user' ? 'justify-end' : 'justify-start'
+                message.role === "user" ? "justify-end" : "justify-start"
               }`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              {message.role === 'assistant' && (
+              {message.role === "assistant" && (
                 <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa1.png"  width={100} height={100} />
+                  <img src="/images/koa1.png" width={100} height={100} />
                 </div>
               )}
               <div
                 className={`max-w-[70%] rounded-2xl px-4 py-3 ${
-                  message.role === 'user'
-                    ? 'bg-[#febd89] text-[#120800] ml-auto shadow-xl'
-                    : 'bg-[#f8d7bc] text-[#120800] shadow-xl'
+                  message.role === "user"
+                    ? "bg-[#febd89] text-[#120800] ml-auto shadow-xl"
+                    : "bg-[#f8d7bc] text-[#120800] shadow-xl"
                 }`}
-                style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+                style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
               >
-                <div 
-                  className="text-4xl leading-relaxed whitespace-pre-wrap break-words"
+                <div
+                  className="text-2xl leading-relaxed whitespace-pre-wrap break-words"
                   style={{
-                    lineHeight: '1.6',
-                    wordSpacing: '0.05em',
-                    letterSpacing: '0.01em'
+                    lineHeight: "1.6",
+                    wordSpacing: "0.05em",
+                    letterSpacing: "0.01em",
                   }}
                 >
                   {message.content}
                 </div>
               </div>
-              {message.role === 'user' && (
+              {message.role === "user" && (
                 <div className="w-15 h-15 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png"  width={90} height={90} />
+                  <img src="/images/user.png" width={90} height={90} />
                 </div>
               )}
             </div>
@@ -1070,14 +1143,20 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           {isLoading && !messageLimitReached && (
             <div className="flex gap-3 justify-start animate-in slide-in-from-bottom-2 duration-300 ease-out">
               <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
-                  {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa1.png"  width={100} height={100} />
+                {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
+                <img src="/images/koa1.png" width={100} height={100} />
               </div>
               <div className=" rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
                   <div className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce"></div>
-                  <div className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div
+                    className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  ></div>
+                  <div
+                    className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
                 </div>
               </div>
             </div>
@@ -1085,20 +1164,24 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           <div ref={messagesEndRef} />
         </div>
 
-                        {/* -----------------------------Input - Completely disabled when limit reached-----------------------------*/}
-        <form onSubmit={handleSubmit} className="p-2  border-t-2 bg-gradient-to-b from-[#9e3918] to-[#9a2b05] animate-in slide-in-from-bottom-2 duration-300 ease-out">
+        {/* -----------------------------Input - Completely disabled when limit reached-----------------------------*/}
+        <form
+          onSubmit={handleSubmit}
+          className="p-4  border-t-2 bg-gradient-to-b from-[#9e3918] to-[#9a2b05] animate-in slide-in-from-bottom-2 duration-300 ease-out"
+        >
           {/* Training Mode Indicator */}
           {isTrainingMode && (
             <div className="mb-2 text-center">
               <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-lg px-3 py-1 text-2xl">
                 <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-2xl text-green-700 font-medium">
-                  Training Mode Active - All messages are being recorded with AI analysis
+                  Training Mode Active - All messages are being recorded with AI
+                  analysis
                 </span>
               </div>
             </div>
           )}
-          
+
           <div className="flex gap-3">
             <input
               ref={inputRef}
@@ -1106,19 +1189,19 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={
-                messageLimitReached 
-                  ? "Chat disabled - Message limit reached" 
-                  : isTrainingMode 
-                    ? "Training mode - Type your message for analysis..."
-                    : "Type a message..."
+                messageLimitReached
+                  ? "Chat disabled - Message limit reached"
+                  : isTrainingMode
+                  ? "Training mode - Type your message for analysis..."
+                  : "Type a message..."
               }
-              className="flex-1 font-4xl text-5xl bg-[#f3e6c8] border-2  rounded-3xl px-4 py-2 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
+              className="flex-1 font-3xl text-3xl bg-[#f3e6c8] border-2  rounded-3xl px-4 py-2 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
               disabled={isLoading || messageLimitReached}
             />
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading || messageLimitReached}
-              className="text-5xl bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+              className="text-4xl bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
               <svg
@@ -1131,14 +1214,15 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             </button>
           </div>
         </form>
-        
+
         {/* Enhanced Resize Handle */}
-        <div 
+        <div
           className="absolute bottom-0 right-0 w-4 h-4 cursor-nw-resize flex items-center justify-center group"
           // onMouseDown={handleResizeMouseDown}
           style={{
-            background: 'linear-gradient(135deg, transparent 70%,rgb(104, 26, 2) 50%)',
-            borderRadius: '0 0 16px 0'
+            background:
+              "linear-gradient(135deg, transparent 70%,rgb(104, 26, 2) 50%)",
+            borderRadius: "0 0 16px 0",
           }}
         >
           <div className="w-3 h-3 bg-[#8b4513] rounded-full opacity-30 group-hover:opacity-100 transition-opacity duration-200" />
