@@ -1200,7 +1200,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   ? "Training mode - Type your message for analysis..."
                   : "Type a message..."
               }
-              className="flex-1 font-xl text-2xl bg-[#f3e6c8] border-2  rounded-full px-3 py-1 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
+              className="flex-1 font-xl text-xl bg-[#f3e6c8] border-2  rounded-full px-3 py-1 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
               disabled={isLoading || messageLimitReached}
             />
             <button
