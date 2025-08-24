@@ -986,7 +986,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           <div className="flex items-center gap-3 ml-2">
             <div className="w-15 h-15 pl-4 py-4 rounded-full flex items-center justify-center border-1 border-[#8b4513]">
               {/* <span className="text-[#8b4513] font-bold text-lg">K</span> */}
-              <img src="/images/koa2.png" width={80} height={80} />
+              <img src="/images/koa2.png" width={60} height={60} />
             </div>
             <div>
               {/* <h2 className="text-2xl font-extrabold text-[#ffffff]">Koã</h2> */}
@@ -1012,19 +1012,24 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             {/* Clear Chat Button */}
             <button
               onClick={() => setShowClearChatConfirm(true)}
-              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2 mt-2 mr-20 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
+              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2  mr-10 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
               // onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
               title="Clear Chat History"
             >
-              <svg
+              {/* <svg
                 className="w-10 h-10"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              </svg> */}
+              <span
+                className="text-[#8b4513] hover:text-[#62432b] transition-colors px-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-5xl"
+                aria-label="Close"
+              >
+                ×
+              </span>
             </button>
-
             {/* Close Button */}
             {/* <button
               onClick={onClose}
@@ -1069,8 +1074,8 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5 text-[#ff7f24]" />
               <div className="flex-1">
-                <p className="text-[#fff8dc] text-5xl">Clear Chat History?</p>
-                <p className="text-[#fff8dc] text-3xl">
+                <p className="text-[#fff8dc] text-3xl">Clear Chat History?</p>
+                <p className="text-[#fff8dc] text-2xl">
                   This will permanently delete all your chat messages. This
                   action cannot be undone.
                 </p>
@@ -1110,7 +1115,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               {message.role === "assistant" && (
                 <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa1.png" width={100} height={100} />
+                  <img src="/images/koa1.png" width={80} height={80} />
                 </div>
               )}
               <div
@@ -1135,7 +1140,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               {message.role === "user" && (
                 <div className="w-15 h-15 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png" width={90} height={90} />
+                  <img src="/images/user.png" width={50} height={50} />
                 </div>
               )}
             </div>
@@ -1172,7 +1177,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           {/* Training Mode Indicator */}
           {isTrainingMode && (
             <div className="mb-2 text-center">
-              <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-lg px-3 py-1 text-2xl">
+              <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-lg px-2 py-1 text-2xl">
                 <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-2xl text-green-700 font-medium">
                   Training Mode Active - All messages are being recorded with AI
@@ -1195,17 +1200,17 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   ? "Training mode - Type your message for analysis..."
                   : "Type a message..."
               }
-              className="flex-1 font-3xl text-3xl bg-[#f3e6c8] border-2  rounded-3xl px-4 py-2 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
+              className="flex-1 font-2xl text-2xl bg-[#f3e6c8] border-2  rounded-full px-3 py-1 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
               disabled={isLoading || messageLimitReached}
             />
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading || messageLimitReached}
-              className="text-4xl bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+              className="text-2xl bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
               <svg
-                className="-translate-y-[8px] w-10 h-10 ml-2 inline rotate-[-45deg]"
+                className="-translate-y-[8px] w-6 h-6 ml-2 inline rotate-[-45deg]"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
