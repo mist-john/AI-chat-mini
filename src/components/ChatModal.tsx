@@ -1082,13 +1082,13 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 <div className="flex gap-2 mt-3">
                   <button
                     onClick={clearChatHistory}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-4xl"
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-2xl"
                   >
                     Yes, Clear All
                   </button>
                   <button
                     onClick={() => setShowClearChatConfirm(false)}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-4xl"
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-2xl"
                   >
                     Cancel
                   </button>
@@ -1115,7 +1115,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               {message.role === "assistant" && (
                 <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa1.png" width={80} height={80} />
+                  <img src="/images/koa1.png" width={60} height={60} />
                 </div>
               )}
               <div
@@ -1140,7 +1140,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               {message.role === "user" && (
                 <div className="w-15 h-15 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png" width={50} height={50} />
+                  <img src="/images/user.png" width={40} height={40} />
                 </div>
               )}
             </div>
@@ -1149,17 +1149,17 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <div className="flex gap-3 justify-start animate-in slide-in-from-bottom-2 duration-300 ease-out">
               <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                 {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                <img src="/images/koa1.png" width={100} height={100} />
+                <img src="/images/koa1.png" width={60} height={60} />
               </div>
               <div className=" rounded-2xl px-4 py-3">
                 <div className="flex space-x-1">
-                  <div className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce"></div>
+                  <div className="w-5 h-5 bg-[#8c4610] rounded-full animate-bounce"></div>
                   <div
-                    className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce"
+                    className="w-5 h-5 bg-[#8c4610] rounded-full animate-bounce"
                     style={{ animationDelay: "0.1s" }}
                   ></div>
                   <div
-                    className="w-8 h-8 bg-[#8c4610] rounded-full animate-bounce"
+                    className="w-5 h-5 bg-[#8c4610] rounded-full animate-bounce"
                     style={{ animationDelay: "0.2s" }}
                   ></div>
                 </div>
