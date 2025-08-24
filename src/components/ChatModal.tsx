@@ -979,7 +979,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         {/* -----------------------------Header - Now Draggable-----------------------------*/}
         <div
           ref={modalContentRef}
-          className="flex items-center justify-between rounded-t-4xl p-1 bg-gradient-to-b from-[#ff6740] to-[#fb8b6e]  animate-in slide-in-from-top-2 duration-300 ease-out  select-none draggable-header hover:bg-gradient-to-b hover:from-[#e67e22] hover:to-[#f0c090] transition-all duration-200"
+          className="flex items-center justify-between rounded-t-4xl p-1 bg-gradient-to-b from-[#ff6740] to-[#fb8b6e]  animate-in slide-in-from-top-2 duration-300 ease-out  select-none draggable-header transition-all duration-200"
           // onMouseDown={handleMouseDown}
           style={{ userSelect: "none" }}
         >
@@ -1010,26 +1010,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           </div>
           <div className="flex items-center gap-2">
             {/* Clear Chat Button */}
-            <button
-              // onClick={() => setShowClearChatConfirm(true)}
-              className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2  mr-10 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
-              // onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
-              title="Clear Chat History"
-            >
-              {/* <svg
-                className="w-10 h-10"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg> */}
-              {/* <span
-                className="text-[#8b4513] hover:text-[#62432b] transition-colors px-1 rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-5xl"
-                aria-label="Close"
-              >
-                ×
-              </span> */}
-            </button>
+
             {/* Close Button */}
             {/* <button
               onClick={onClose}
@@ -1172,7 +1153,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         {/* -----------------------------Input - Completely disabled when limit reached-----------------------------*/}
         <form
           onSubmit={handleSubmit}
-          className="p-3  border-t-2 bg-gradient-to-b from-[#9e3918] to-[#9a2b05] animate-in slide-in-from-bottom-2 duration-300 ease-out"
+          className="p-3  border-t-2 bg-gradient-to-b from-[#ff6740] to-[#e04c26] animate-in slide-in-from-bottom-2 duration-300 ease-out"
         >
           {/* Training Mode Indicator */}
           {isTrainingMode && (
@@ -1206,7 +1187,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading || messageLimitReached}
-              className="text-xl bg-[#fd6d48] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+              className="text-xl bg-[#842703] hover:bg-[#fb5cff]/110 shadow-lg shadow-[#fff]/50 disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
               <svg
