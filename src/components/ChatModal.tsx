@@ -1187,7 +1187,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading || messageLimitReached}
-              className="text-xl bg-[#842703] hover:bg-[#fb5cff]/110 shadow-lg shadow-[#fff]/50 disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+              className="text-xl bg-[#842703] hover:bg-[#fb5cff]/110  disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
               <svg
@@ -1202,17 +1202,6 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         </form>
 
         {/* Enhanced Resize Handle */}
-        <div
-          className="absolute bottom-0 right-0 w-4 h-4 cursor-nw-resize flex items-center justify-center group"
-          // onMouseDown={handleResizeMouseDown}
-          style={{
-            background:
-              "linear-gradient(135deg, transparent 70%,rgb(104, 26, 2) 50%)",
-            borderRadius: "0 0 16px 0",
-          }}
-        >
-          <div className="w-3 h-3 bg-[#8b4513] rounded-full opacity-30 group-hover:opacity-100 transition-opacity duration-200" />
-        </div>
       </div>
     </div>
   );
