@@ -984,7 +984,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           style={{ userSelect: "none" }}
         >
           <div className="flex items-center gap-3 ml-2">
-            <div className="w-15 h-15 pl-4 py-4 rounded-full flex items-center justify-center border-1 border-[#8b4513]">
+            <div className="w-15 h-15 pl-4 py-2 rounded-full flex items-center justify-center border-1 border-[#8b4513]">
               {/* <span className="text-[#8b4513] font-bold text-lg">K</span> */}
               <img src="/images/koa2.png" width={60} height={60} />
             </div>
