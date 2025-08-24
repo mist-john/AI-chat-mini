@@ -1127,7 +1127,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
               >
                 <div
-                  className="text-xl leading-relaxed whitespace-pre-wrap break-words"
+                  className="text-md leading-relaxed whitespace-pre-wrap break-words"
                   style={{
                     lineHeight: "1.6",
                     wordSpacing: "0.05em",
@@ -1151,15 +1151,15 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
                 <img src="/images/koa1.png" width={60} height={60} />
               </div>
-              <div className=" rounded-2xl px-4 py-3">
+              <div className=" rounded-xl px-4 py-3">
                 <div className="flex space-x-1">
-                  <div className="w-5 h-5 bg-[#8c4610] rounded-full animate-bounce"></div>
+                  <div className="w-3 h-3 bg-[#8c4610] rounded-full animate-bounce"></div>
                   <div
-                    className="w-5 h-5 bg-[#8c4610] rounded-full animate-bounce"
+                    className="w-3 h-  bg-[#8c4610] rounded-full animate-bounce"
                     style={{ animationDelay: "0.1s" }}
                   ></div>
                   <div
-                    className="w-5 h-5 bg-[#8c4610] rounded-full animate-bounce"
+                    className="w-3 h-3 bg-[#8c4610] rounded-full animate-bounce"
                     style={{ animationDelay: "0.2s" }}
                   ></div>
                 </div>
@@ -1172,14 +1172,14 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         {/* -----------------------------Input - Completely disabled when limit reached-----------------------------*/}
         <form
           onSubmit={handleSubmit}
-          className="p-4  border-t-2 bg-gradient-to-b from-[#9e3918] to-[#9a2b05] animate-in slide-in-from-bottom-2 duration-300 ease-out"
+          className="p-3  border-t-2 bg-gradient-to-b from-[#9e3918] to-[#9a2b05] animate-in slide-in-from-bottom-2 duration-300 ease-out"
         >
           {/* Training Mode Indicator */}
           {isTrainingMode && (
             <div className="mb-2 text-center">
-              <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-lg px-2 py-1 text-2xl">
+              <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-lg px-2 py-1 text-xl">
                 <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-2xl text-green-700 font-medium">
+                <span className="text-xl text-green-700 font-medium">
                   Training Mode Active - All messages are being recorded with AI
                   analysis
                 </span>
@@ -1200,13 +1200,13 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   ? "Training mode - Type your message for analysis..."
                   : "Type a message..."
               }
-              className="flex-1 font-2xl text-2xl bg-[#f3e6c8] border-2  rounded-full px-3 py-1 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
+              className="flex-1 font-xl text-2xl bg-[#f3e6c8] border-2  rounded-full px-3 py-1 text-[#8b4513] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff7f24] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:border-[#924e1d]"
               disabled={isLoading || messageLimitReached}
             />
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading || messageLimitReached}
-              className="text-2xl bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+              className="text-xl bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
               <svg
