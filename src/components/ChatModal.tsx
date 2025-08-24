@@ -1011,7 +1011,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           <div className="flex items-center gap-2">
             {/* Clear Chat Button */}
             <button
-              onClick={() => setShowClearChatConfirm(true)}
+              // onClick={() => setShowClearChatConfirm(true)}
               className="text-[#8b4513] hover:text-[#62432b] transition-colors p-2  mr-10 rounded-lg hover:bg-[#f3e6c8]/50 z-10"
               // onMouseDown={(e) => e.stopPropagation()} // Prevent dragging when clicking clear button
               title="Clear Chat History"
@@ -1023,12 +1023,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               >
                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg> */}
-              <span
-                className="text-[#8b4513] hover:text-[#62432b] transition-colors px-2 rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-5xl"
+              {/* <span
+                className="text-[#8b4513] hover:text-[#62432b] transition-colors px-1 rounded-lg hover:bg-[#f3e6c8]/50 z-10 font-bold text-5xl"
                 aria-label="Close"
               >
                 ×
-              </span>
+              </span> */}
             </button>
             {/* Close Button */}
             {/* <button
@@ -1115,7 +1115,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               {message.role === "assistant" && (
                 <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">K</span> */}
-                  <img src="/images/koa1.png" width={60} height={60} />
+                  <img src="/images/koa1.png" width={50} height={50} />
                 </div>
               )}
               <div
@@ -1127,7 +1127,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
               >
                 <div
-                  className="text-2xl leading-relaxed whitespace-pre-wrap break-words"
+                  className="text-xl leading-relaxed whitespace-pre-wrap break-words"
                   style={{
                     lineHeight: "1.6",
                     wordSpacing: "0.05em",
@@ -1138,9 +1138,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 </div>
               </div>
               {message.role === "user" && (
-                <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
+                <div className="w-14 h-14  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png" width={50} height={0} />
+                  <img src="/images/user.png" width={40} height={40} />
                 </div>
               )}
             </div>
