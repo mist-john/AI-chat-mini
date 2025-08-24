@@ -1119,7 +1119,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 </div>
               )}
               <div
-                className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                className={`max-w-[70%] rounded-2xl px-4 py-2 ${
                   message.role === "user"
                     ? "bg-[#febd89] text-[#120800] ml-auto shadow-xl"
                     : "bg-[#f8d7bc] text-[#120800] shadow-xl"
@@ -1138,9 +1138,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 </div>
               </div>
               {message.role === "user" && (
-                <div className="w-14 h-14  rounded-full flex items-center justify-center flex-shrink-0 ">
+                <div className="w-13 h-13  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png" width={40} height={40} />
+                  <img src="/images/user.png" width={33} height={33} />
                 </div>
               )}
             </div>
@@ -1206,7 +1206,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading || messageLimitReached}
-              className="text-xl bg-[#e3430e] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
+              className="text-xl bg-[#fd6d48] hover:bg-[#fb5c26]/80 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed text-white px-6 py-2 rounded-3xl transition-all duration-200 hover:scale-105 active:scale-95 font-medium"
             >
               Send
               <svg
