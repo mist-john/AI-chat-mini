@@ -1138,9 +1138,9 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                 </div>
               </div>
               {message.role === "user" && (
-                <div className="w-15 h-15 bg-[#f3e6c8] rounded-full flex items-center justify-center flex-shrink-0 ">
+                <div className="w-15 h-15  rounded-full flex items-center justify-center flex-shrink-0 ">
                   {/* <span className="text-[#8b4513] font-bold text-sm">U</span> */}
-                  <img src="/images/user.png" width={40} height={40} />
+                  <img src="/images/user.png" width={50} height={0} />
                 </div>
               )}
             </div>
